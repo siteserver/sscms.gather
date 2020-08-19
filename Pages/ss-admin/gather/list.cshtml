@@ -1,0 +1,38 @@
+@page
+@{ Layout = "_Layout"; }
+
+<div style="height: 10px"></div>
+
+<el-table :data="rules">
+  <el-table-column prop="ruleName" label="采集规则" width="200"></el-table-column>
+  <el-table-column prop="gatherUrl" label="采集网址"></el-table-column>
+  <el-table-column prop="gatherDate" label="最近采集时间" width="160"></el-table-column>
+  <el-table-column label="操作" width="320">
+    <template slot-scope="scope">
+
+      <el-link :underline="false" style="margin-right: 5px;" type="primary" v-on:click="btnTestClick(scope.row)">
+        测 试
+      </el-link>
+      <el-link :underline="false" style="margin-right: 5px;" type="primary" v-on:click="btnStartClick(scope.row)">
+        开始采集
+      </el-link>
+      <el-link :underline="false" style="margin-right: 5px;" type="primary" v-on:click="btnSingleClick(scope.row)">
+        单页采集
+      </el-link>
+      <el-link :underline="false" style="margin-right: 5px;" type="primary" v-on:click="btnEditClick(scope.row)">
+        编 辑
+      </el-link>
+      <el-link :underline="false" style="margin-right: 5px;" type="primary" v-on:click="btnCopyClick(scope.row)">
+        复 制
+      </el-link>
+      <el-link :underline="false" style="margin-right: 5px;" type="danger" v-on:click="btnDeleteClick(scope.row)">
+        删 除
+      </el-link>
+
+    </template>
+  </el-table-column>
+</el-table>
+
+@section Scripts{
+  <script src="/assets/gather/js/list.js" type="text/javascript"></script>
+}

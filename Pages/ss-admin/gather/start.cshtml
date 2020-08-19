@@ -1,0 +1,136 @@
+﻿@page
+@{ Layout = "_Layout"; }
+
+<div style="height: 10px"></div>
+
+<template v-if="pageProcess">
+
+  <el-alert
+    v-if="cache.status === 'success'"
+    :title="cache.message"
+    type="success"
+    effect="dark"
+    show-icon>
+  </el-alert>
+  <el-alert
+    v-else-if="cache.status === 'failure'"
+    :title="cache.message"
+    type="error"
+    effect="dark"
+    show-icon>
+  </el-alert>
+  <template v-else>
+
+    <el-progress :text-inside="true" :stroke-width="24" :percentage="percentage" status="success"></el-progress>
+
+    <h4 v-if="cache.totalCount > 0">
+        共获取到 <strong>{{cache.totalCount}}</strong> 篇内容，成功采集到 <strong>{{cache.successCount}}</strong> 篇内容
+    </h4>
+    <el-alert
+    v-if="cache.isSuccess"
+      :title="cache.message"
+      type="success"
+      show-icon>
+    </el-alert>
+    <el-alert
+      v-else
+      :title="cache.message"
+      type="error"
+      show-icon>
+    </el-alert>
+
+  </template>
+
+  <div v-if="cache.failureMessages && cache.failureMessages.length > 0" class="text-center" style="max-height: 300px; overflow-y: auto;">
+    <h4>采集失败记录</h4>
+    <el-divider></el-divider>
+    <el-alert
+      v-for="failureMessage in cache.failureMessages"
+      :key="failureMessage"
+      :title="failureMessage"
+      type="error"
+      show-icon>
+    </el-alert>
+  </div>
+
+  <el-divider></el-divider>
+  <div style="text-align: center; margin: 20px 0;">
+    <el-button size="small" type="default" v-on:click="btnCloseClick">关 闭</el-button>
+  </div>
+
+</template>
+<template v-else>
+
+  <el-form ref="form" :model="form" size="small" label-width="240px">
+
+    <el-form-item label="采集规则名称">
+      <el-input v-model="rule.ruleName" :disabled="true"></el-input>
+    </el-form-item>
+    <el-form-item label="采集到栏目" prop="channelIds" :rules="{ required: true, message: '请选择采集到栏目' }">
+      <el-cascader
+        ref="channelIds"
+        v-model="form.channelIds"
+        :options="channels"
+        :props="{ multiple: false, checkStrictly: true }"
+        filterable
+        placeholder="请选择采集到栏目">
+        <span slot-scope="{ node, data }">
+          {{ node.label }} ({{ data.count }})
+        </span>
+      </el-cascader>
+    </el-form-item>
+    <el-form-item label="采集内容数" prop="gatherNum" :rules="[
+      { required: true, message: '请输入采集内容数' },
+      { type: 'number', message: '采集内容数必须为数字值'}
+    ]">
+      <el-input-number controls-position="right" size="small" v-model.number="form.gatherNum" placeholder="请输入采集内容数"></el-input-number>
+      <div class="tips">需要采集的内容数，0代表采集所有内容</div>
+    </el-form-item>
+    <el-form-item label="采集内容的审核状态">
+      <el-radio-group v-model="form.isChecked">
+        <el-radio :label="true">审核通过</el-radio>
+        <el-radio :label="false">待审核</el-radio>
+      </el-radio-group>
+      <div class="tips">采集的内容是否不经过审核直接添加到栏目中</div>
+    </el-form-item>
+    <el-form-item label="采集网址规则">
+      <el-checkbox v-model="form.gatherUrlIsCollection" :label="true">从指定网址</el-checkbox>
+      <el-checkbox v-model="form.gatherUrlIsSerialize" :label="true">从序列相似网址</el-checkbox>
+    </el-form-item>
+    <el-form-item v-if="form.gatherUrlIsCollection" label="指定采集网址" prop="gatherUrlCollection" :rules="{ required: true, message: '请输入指定采集网址' }">
+      <el-input type="textarea" :rows="5" v-model="form.gatherUrlCollection"></el-input>
+      <div class="tips">多个网址以换行符分割</div>
+    </el-form-item>
+    <template v-if="form.gatherUrlIsSerialize">
+      <el-form-item label="序列相似网址" prop="gatherUrlSerialize" :rules="{ required: true, message: '请输入序列相似网址' }">
+        <el-input id="gatherUrlSerialize" v-model="form.gatherUrlSerialize"></el-input>
+        <div class="tips">序列相似网址必须<el-link :underline="false" type="primary" v-on:click="insert('gatherUrlSerialize', '*')">插入 * 通配符</el-link>，代表变动数字</div>
+      </el-form-item>
+      <el-form-item label="变动数字范围">
+        从
+        <el-input-number controls-position="right" size="small" :min="1" v-model.number="form.serializeFrom" style="width: 100px" v-validate="'required|numeric'"></el-input-number>
+        到
+        <el-input-number controls-position="right" size="small" :min="1" v-model.number="form.serializeTo" style="width: 100px" v-validate="'required|numeric|min_value:1'"></el-input-number>
+        数字变动倍数：
+        <el-input-number controls-position="right" size="small" :min="1" v-model.number="form.serializeInterval" style="width: 100px" v-validate="'required|numeric|min_value:1'"></el-input-number>
+        <el-checkbox v-model="form.serializeIsOrderByDesc" :label="true" style="margin-left: 20px;">倒序</el-checkbox>
+        <el-checkbox v-model="form.serializeIsAddZero" :label="true">补零</el-checkbox>
+      </el-form-item>
+    </template>
+    <el-form-item label="内容地址包含" prop="urlInclude" :rules="{ required: true, message: '请输入内容地址包含' }">
+      <el-input type="textarea" :rows="5" id="urlInclude" v-model="form.urlInclude"></el-input>
+      <div class="tips">遇到变动字符请<el-link :underline="false" type="primary" v-on:click="insert('urlInclude', '*')">插入 * 通配符</el-link>，多个条件请<el-link :underline="false" type="primary" v-on:click="insert('urlInclude', '|')">插入 | 通配符</el-link></div>
+    </el-form-item>
+    
+  </el-form>
+  
+  <el-divider></el-divider>
+  <div style="text-align: center; margin: 20px 0;">
+    <el-button size="small" type="primary" v-on:click="btnSubmitClick">开始采集</el-button>
+    <el-button size="small" type="default" v-on:click="btnCloseClick">关 闭</el-button>
+  </div>
+</template>
+
+@section Scripts{
+  <script src="/assets/gather/js/start.js" type="text/javascript"></script>
+}

@@ -1,0 +1,195 @@
+{
+  "name": "gather",
+  "displayName": "信息采集插件",
+  "description": "SSCMS 信息采集插件能够采集网站内容至CMS系统中",
+  "version": "1.0.0",
+  "license": "GPL-3.0",
+  "publisher": "sscms",
+  "engines": {
+    "sscms": "^7.0.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "内容"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/siteserver/sscms.gather"
+  },
+  "icon": "/assets/gather/logo.svg",
+  "output": "bin/Release/netcoreapp3.1",
+  "main": "SSCMS.Gather.dll",
+  "extensions": {
+    "permissions": {
+      "gather_add": {
+        "text": "添加采集规则",
+        "type": ["web", "wx"]
+      },
+      "gather_list": {
+        "text": "采集规则管理",
+        "type": ["web", "wx"]
+      }
+    },
+    "menus": {
+      "gather_all": {
+        "text": "信息采集",
+        "iconClass": "fa fa-download",
+        "type": ["web", "wx"],
+        "permissions": [
+          "gather_add",
+          "gather_list"
+        ],
+        "menus": {
+          "gather_add": {
+            "text": "添加采集规则",
+            "link": "/ss-admin/gather/add/",
+            "permissions": ["gather_add"],
+            "order": 1
+          },
+          "gather_list": {
+            "text": "采集规则管理",
+            "link": "/ss-admin/gather/list/",
+            "permissions": ["gather_list"],
+            "order": 2
+          }
+        }
+      }
+    },
+    "tables": {
+      "sscms_gather_rule": {
+        "columns": [
+          {
+            "attributeName": "RuleName",
+            "dataType": "VarChar"
+          },
+          {
+            "attributeName": "SiteId",
+            "dataType": "Integer"
+          },
+          {
+            "attributeName": "CookieString",
+            "dataType": "Text"
+          },
+          {
+            "attributeName": "GatherUrlIsCollection",
+            "dataType": "Boolean"
+          },
+          {
+            "attributeName": "GatherUrlCollection",
+            "dataType": "Text"
+          },
+          {
+            "attributeName": "GatherUrlIsSerialize",
+            "dataType": "Boolean"
+          },
+          {
+            "attributeName": "GatherUrlSerialize",
+            "dataType": "Text"
+          },
+          {
+            "attributeName": "SerializeFrom",
+            "dataType": "Integer"
+          },
+          {
+            "attributeName": "SerializeTo",
+            "dataType": "Integer"
+          },
+          {
+            "attributeName": "SerializeInterval",
+            "dataType": "Integer"
+          },
+          {
+            "attributeName": "SerializeIsOrderByDesc",
+            "dataType": "Boolean"
+          },
+          {
+            "attributeName": "SerializeIsAddZero",
+            "dataType": "Boolean"
+          },
+          {
+            "attributeName": "ChannelId",
+            "dataType": "Integer"
+          },
+          {
+            "attributeName": "Charset",
+            "dataType": "VarChar"
+          },
+          {
+            "attributeName": "UrlInclude",
+            "dataType": "Text"
+          },
+          {
+            "attributeName": "TitleInclude",
+            "dataType": "Text"
+          },
+          {
+            "attributeName": "ContentExclude",
+            "dataType": "Text"
+          },
+          {
+            "attributeName": "ContentHtmlClearCollection",
+            "dataType": "Text"
+          },
+          {
+            "attributeName": "ContentHtmlClearTagCollection",
+            "dataType": "Text"
+          },
+          {
+            "attributeName": "LastGatherDate",
+            "dataType": "DateTime"
+          },
+          {
+            "attributeName": "ListAreaStart",
+            "dataType": "Text"
+          },
+          {
+            "attributeName": "ListAreaEnd",
+            "dataType": "Text"
+          },
+          {
+            "attributeName": "ContentChannelStart",
+            "dataType": "Text"
+          },
+          {
+            "attributeName": "ContentChannelEnd",
+            "dataType": "Text"
+          },
+          {
+            "attributeName": "ContentTitleStart",
+            "dataType": "Text"
+          },
+          {
+            "attributeName": "ContentTitleEnd",
+            "dataType": "Text"
+          },
+          {
+            "attributeName": "ContentContentStart",
+            "dataType": "Text"
+          },
+          {
+            "attributeName": "ContentContentEnd",
+            "dataType": "Text"
+          },
+          {
+            "attributeName": "ContentNextPageStart",
+            "dataType": "Text"
+          },
+          {
+            "attributeName": "ContentNextPageEnd",
+            "dataType": "Text"
+          },
+          {
+            "attributeName": "ContentAttributes",
+            "dataType": "Text"
+          },
+          {
+            "attributeName": "ContentAttributesXml",
+            "dataType": "Text"
+          }
+        ]
+      }
+    }
+  }
+}
