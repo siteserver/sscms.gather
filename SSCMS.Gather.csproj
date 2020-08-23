@@ -7,9 +7,13 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <ProjectReference Include="..\..\..\SSCMS\SSCMS.csproj" />
     <Content Update="wwwroot\**\*" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="README.md" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="CHANGELOG.md" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SSCMS" Version="7.0.0" />
   </ItemGroup>
 
 </Project>

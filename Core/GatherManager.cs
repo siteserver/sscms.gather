@@ -5,6 +5,7 @@ using SSCMS.Enums;
 using SSCMS.Gather.Abstractions;
 using SSCMS.Gather.Models;
 using SSCMS.Models;
+using SSCMS.Plugins;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;

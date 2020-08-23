@@ -2,6 +2,7 @@
 using Datory;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Gather.Abstractions;
 using SSCMS.Dto;
 using SSCMS.Gather.Models;
@@ -11,7 +12,7 @@ using SSCMS.Utils;
 
 namespace SSCMS.Gather.Controllers.Admin
 {
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class AddController : ControllerBase
     {

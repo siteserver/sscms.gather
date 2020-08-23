@@ -2,7 +2,7 @@
   "name": "gather",
   "displayName": "信息采集插件",
   "description": "SSCMS 信息采集插件能够采集网站内容至CMS系统中",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "GPL-3.0",
   "publisher": "sscms",
   "engines": {
@@ -19,7 +19,7 @@
     "url": "https://github.com/siteserver/sscms.gather"
   },
   "icon": "/assets/gather/logo.svg",
-  "output": "bin/Release/netcoreapp3.1",
+  "output": "",
   "main": "SSCMS.Gather.dll",
   "extensions": {
     "permissions": {

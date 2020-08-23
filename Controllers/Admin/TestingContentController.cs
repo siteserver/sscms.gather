@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Gather.Abstractions;
 using SSCMS.Dto;
 using SSCMS.Repositories;
@@ -9,7 +10,7 @@ using SSCMS.Utils;
 
 namespace SSCMS.Gather.Controllers.Admin
 {
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class TestingContentController : ControllerBase
     {

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using SSCMS.Gather.Abstractions;
-using SSCMS.Context;
+using SSCMS.Parse;
 using SSCMS.Plugins;
 using SSCMS.Services;
 
