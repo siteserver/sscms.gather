@@ -5,7 +5,6 @@ using SSCMS.Enums;
 using SSCMS.Gather.Abstractions;
 using SSCMS.Gather.Models;
 using SSCMS.Models;
-using SSCMS.Plugins;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -15,6 +14,8 @@ namespace SSCMS.Gather.Core
 {
     public class GatherManager : IGatherManager
     {
+        public const string PluginId = "sscms.gather";
+
         public const string StatusProgress = "progress";
         public const string StatusSuccess = "success";
         public const string StatusFailure = "failure";
@@ -22,14 +23,13 @@ namespace SSCMS.Gather.Core
         private readonly IPathManager _pathManager;
         private readonly ICacheManager<ProgressCache> _cacheManager;
         private readonly ITaskManager _taskManager;
-        private readonly IPlugin _plugin;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
         private readonly IPluginConfigRepository _pluginConfigRepository;
         private readonly IRuleRepository _ruleRepository;
 
-        public GatherManager(IPathManager pathManager, ICacheManager<ProgressCache> cacheManager, ITaskManager taskManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IPluginConfigRepository pluginConfigRepository, IRuleRepository ruleRepository)
+        public GatherManager(IPathManager pathManager, ICacheManager<ProgressCache> cacheManager, ITaskManager taskManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IPluginConfigRepository pluginConfigRepository, IRuleRepository ruleRepository)
         {
             _pathManager = pathManager;
             _cacheManager = cacheManager;
@@ -39,8 +39,6 @@ namespace SSCMS.Gather.Core
             _contentRepository = contentRepository;
             _pluginConfigRepository = pluginConfigRepository;
             _ruleRepository = ruleRepository;
-
-            _plugin = pluginManager.Current;
         }
 
         public const string PermissionsAdd = "gather_add";
@@ -48,14 +46,12 @@ namespace SSCMS.Gather.Core
 
         public async Task<Config> GetConfigAsync(int siteId)
         {
-            var pluginId = _plugin.PluginId;
-            return await _pluginConfigRepository.GetConfigAsync<Config>(pluginId, siteId) ?? new Config();
+            return await _pluginConfigRepository.GetConfigAsync<Config>(PluginId, siteId) ?? new Config();
         }
 
         public async Task<bool> SetConfigAsync(int siteId, Config config)
         {
-            var pluginId = _plugin.PluginId;
-            return await _pluginConfigRepository.SetConfigAsync(pluginId, siteId, config);
+            return await _pluginConfigRepository.SetConfigAsync(PluginId, siteId, config);
         }
 
         public ProgressCache InitCache(string guid, string message)
