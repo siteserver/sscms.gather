@@ -417,17 +417,7 @@ namespace SSCMS.Gather.Core
                     }
                 }
 
-                var contentInfo = new Content
-                {
-                    SiteId = siteInfo.Id,
-                    ChannelId = channelId,
-                    AdminId = adminId,
-                    AddDate = DateTime.Now,
-                    LastEditAdminId = adminId,
-                    Checked = isChecked,
-                    CheckedLevel = 0,
-                    Title = title
-                };
+                var contentInfo = new Content();
 
                 foreach (var attributeName in contentAttributes)
                 {
@@ -630,6 +620,14 @@ namespace SSCMS.Gather.Core
                 }
 
                 //contentInfo.Content = StringUtility.TextEditorContentEncode(content, siteInfo, false);
+                contentInfo.SiteId = siteInfo.Id;
+                contentInfo.ChannelId = channelId;
+                contentInfo.AdminId = adminId;
+                contentInfo.AddDate = DateTime.Now;
+                contentInfo.LastEditAdminId = adminId;
+                contentInfo.Checked = isChecked;
+                contentInfo.CheckedLevel = 0;
+                contentInfo.Title = title;
                 contentInfo.Body = content;
 
                 //contentInfo.SourceId = SourceManager.CaiJi;

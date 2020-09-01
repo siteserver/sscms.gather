@@ -86,6 +86,7 @@ var methods = {
       ruleId: this.ruleId,
       channelId: this.form.channelId,
       gatherNum: this.form.gatherNum,
+      isChecked: this.form.isChecked,
       gatherUrlIsCollection: this.form.gatherUrlIsCollection,
       gatherUrlIsSerialize: this.form.gatherUrlIsSerialize,
       gatherUrlCollection: this.form.gatherUrlCollection,
