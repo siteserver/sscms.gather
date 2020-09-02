@@ -46,6 +46,7 @@ namespace SSCMS.Gather.Controllers.Admin
         {
             public Rule Rule { get; set; }
             public List<Cascade<int>> Channels { get; set; }
+            public List<int> ChannelIds { get; set; }
         }
 
         public class SubmitRequest

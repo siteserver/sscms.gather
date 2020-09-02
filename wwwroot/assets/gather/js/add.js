@@ -22,15 +22,15 @@ var methods = {
   },
 
   getStartName: function(attribute) {
-    return (attribute.value + 'Start').toLowerCase();
+    return (_.camelCase(attribute.value) + 'Start');
   },
 
   getEndName: function(attribute) {
-    return (attribute.value + 'End').toLowerCase();
+    return (_.camelCase(attribute.value) + 'End');
   },
 
   getDefaultName: function(attribute) {
-    return (attribute.value + 'Default').toLowerCase();
+    return (_.camelCase(attribute.value) + 'Default');
   },
 
   apiGet: function () {
@@ -49,13 +49,10 @@ var methods = {
       $this.charsetList = res.charsetList;
       $this.form = _.assign({
         urlInclude: '',
-        channelIds: [],
+        channelIds: res.channelIds,
         contentHtmlClearList: res.contentHtmlClearList,
         contentHtmlClearTagList: res.contentHtmlClearTagList,
-      }, res.attributesDict, $this.rule);
-      if ($this.rule.channelId) {
-        $this.form.channelIds = [$this.rule.channelId];
-      }
+      }, $this.rule);
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {

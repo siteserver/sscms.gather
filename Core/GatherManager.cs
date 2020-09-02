@@ -18,7 +18,6 @@ namespace SSCMS.Gather.Core
 
         public const string StatusProgress = "progress";
         public const string StatusSuccess = "success";
-        public const string StatusFailure = "failure";
 
         private readonly IPathManager _pathManager;
         private readonly ICacheManager<ProgressCache> _cacheManager;
@@ -86,7 +85,7 @@ namespace SSCMS.Gather.Core
             return guid;
         }
 
-        public async Task GatherChannelsAsync(int adminId, int siteId, int ruleId, string guid, bool isCli)
+        private async Task GatherChannelsAsync(int adminId, int siteId, int ruleId, string guid, bool isCli)
         {
             var cache = InitCache(guid, "开始获取链接...");
             //if (isCli) await CliUtils.PrintLine(cache.Message);
@@ -119,7 +118,6 @@ namespace SSCMS.Gather.Core
             var regexNextPage = GatherUtils.GetRegexUrl(rule.ContentNextPageStart, rule.ContentNextPageEnd);
             var regexTitle = GatherUtils.GetRegexTitle(rule.ContentTitleStart, rule.ContentTitleEnd);
             var contentAttributes = ListUtils.GetStringList(rule.ContentAttributes);
-            var attributesDict = TranslateUtils.JsonDeserialize<Dictionary<string, string>>(rule.ContentAttributesXml);
 
             var contentUrls = GatherUtils.GetContentUrlList(rule, regexListArea, regexUrlInclude, cache);
 
@@ -138,7 +136,7 @@ namespace SSCMS.Gather.Core
                     regexTitleInclude, regexContentExclude, rule.ContentHtmlClearCollection,
                     rule.ContentHtmlClearTagCollection, rule.ContentReplaceFrom, rule.ContentReplaceTo, regexTitle,
                     regexContent, regexContent2, regexContent3, regexNextPage, regexChannel, contentAttributes,
-                    attributesDict, channelIdAndContentIdList, adminId);
+                    rule, channelIdAndContentIdList, adminId);
                 if (result.Success)
                 {
                     cache.SuccessCount++;
@@ -201,7 +199,6 @@ namespace SSCMS.Gather.Core
             var regexNextPage = GatherUtils.GetRegexUrl(rule.ContentNextPageStart, rule.ContentNextPageEnd);
             var regexTitle = GatherUtils.GetRegexTitle(rule.ContentTitleStart, rule.ContentTitleEnd);
             var contentAttributes = ListUtils.GetStringList(rule.ContentAttributes);
-            var attributesDict = TranslateUtils.JsonDeserialize<Dictionary<string, string>>(rule.ContentAttributesXml);
 
             cache.TotalCount = rule.GatherNum > 0 ? rule.GatherNum : urls.Count;
             cache.IsSuccess = true;
@@ -217,7 +214,7 @@ namespace SSCMS.Gather.Core
                     regexTitleInclude, regexContentExclude, rule.ContentHtmlClearCollection,
                     rule.ContentHtmlClearTagCollection, rule.ContentReplaceFrom, rule.ContentReplaceTo, regexTitle,
                     regexContent, regexContent2, regexContent3, regexNextPage, regexChannel, contentAttributes,
-                    attributesDict, channelIdAndContentIdList, adminId);
+                    rule, channelIdAndContentIdList, adminId);
                 if (result.Success)
                 {
                     cache.SuccessCount++;
@@ -252,7 +249,7 @@ namespace SSCMS.Gather.Core
             cache.Message = $"任务完成，共采集内容 {cache.SuccessCount} 篇。";
         }
 
-        private async Task<(bool Success, string Title, string ErrorMessage)> GatherOneAsync(Site siteInfo, Channel channelInfo, bool isSaveImage, bool isSetFirstImageAsImageUrl, bool isSaveFiles, bool isEmptyContentAllowed, bool isSameTitleAllowed, bool isChecked, Charset charset, string url, string cookieString, string regexTitleInclude, string regexContentExclude, string contentHtmlClearCollection, string contentHtmlClearTagCollection, string contentReplaceFrom, string contentReplaceTo, string regexTitle, string regexContent, string regexContent2, string regexContent3, string regexNextPage, string regexChannel, IEnumerable<string> contentAttributes, Dictionary<string, string> attributesDict, ICollection<KeyValuePair<int, int>> channelIdAndContentIdList, int adminId)
+        private async Task<(bool Success, string Title, string ErrorMessage)> GatherOneAsync(Site siteInfo, Channel channelInfo, bool isSaveImage, bool isSetFirstImageAsImageUrl, bool isSaveFiles, bool isEmptyContentAllowed, bool isSameTitleAllowed, bool isChecked, Charset charset, string url, string cookieString, string regexTitleInclude, string regexContentExclude, string contentHtmlClearCollection, string contentHtmlClearTagCollection, string contentReplaceFrom, string contentReplaceTo, string regexTitle, string regexContent, string regexContent2, string regexContent3, string regexNextPage, string regexChannel, IEnumerable<string> contentAttributes, Rule rule, ICollection<KeyValuePair<int, int>> channelIdAndContentIdList, int adminId)
         {
             try
             {
@@ -417,17 +414,20 @@ namespace SSCMS.Gather.Core
                     }
                 }
 
-                var contentInfo = new Content();
+                var contentInfo = new Content
+                {
+                    AddDate = DateTime.Now
+                };
 
                 foreach (var attributeName in contentAttributes)
                 {
                     if (!StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.Title)) && !StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.Body)))
                     {
-                        var normalStart = GatherUtils.GetStartValue(attributesDict, attributeName);
-                        var normalEnd = GatherUtils.GetEndValue(attributesDict, attributeName);
+                        var normalStart = GatherUtils.GetStartValue(rule, attributeName);
+                        var normalEnd = GatherUtils.GetEndValue(rule, attributeName);
 
                         //采集为空时的默认值
-                        var normalDefault = GatherUtils.GetDefaultValue(attributesDict, attributeName);
+                        var normalDefault = GatherUtils.GetDefaultValue(rule, attributeName);
 
                         var regex = GatherUtils.GetRegexAttributeName(attributeName, normalStart, normalEnd);
                         var value = GatherUtils.GetContent(attributeName, regex, contentHtml);
@@ -623,7 +623,6 @@ namespace SSCMS.Gather.Core
                 contentInfo.SiteId = siteInfo.Id;
                 contentInfo.ChannelId = channelId;
                 contentInfo.AdminId = adminId;
-                contentInfo.AddDate = DateTime.Now;
                 contentInfo.LastEditAdminId = adminId;
                 contentInfo.Checked = isChecked;
                 contentInfo.CheckedLevel = 0;

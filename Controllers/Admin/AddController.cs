@@ -8,7 +8,6 @@ using SSCMS.Dto;
 using SSCMS.Gather.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
-using SSCMS.Utils;
 
 namespace SSCMS.Gather.Controllers.Admin
 {
@@ -20,17 +19,15 @@ namespace SSCMS.Gather.Controllers.Admin
         private const string RouteActionsAttributes = "gather/add/actions/attributes";
 
         private readonly IAuthManager _authManager;
-        private readonly IGatherManager _gatherManager;
         private readonly IRuleRepository _ruleRepository;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
 
-        public AddController(IAuthManager authManager, IGatherManager gatherManager, IRuleRepository ruleRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITableStyleRepository tableStyleRepository)
+        public AddController(IAuthManager authManager, IRuleRepository ruleRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITableStyleRepository tableStyleRepository)
         {
             _authManager = authManager;
-            _gatherManager = gatherManager;
             _ruleRepository = ruleRepository;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
@@ -47,10 +44,10 @@ namespace SSCMS.Gather.Controllers.Admin
         {
             public Rule Rule { get; set; }
             public List<Cascade<int>> Channels { get; set; }
+            public List<int> ChannelIds { get; set; }
             public IEnumerable<Select<string>> CharsetList { get; set; }
             public List<string> ContentHtmlClearList { get; set; }
             public List<string> ContentHtmlClearTagList { get; set; }
-            public Dictionary<string, string> AttributesDict { get; set; }
         }
 
         public class AttributesRequest : SiteRequest

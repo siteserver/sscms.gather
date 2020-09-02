@@ -2,7 +2,7 @@
   "name": "gather",
   "displayName": "信息采集插件",
   "description": "SSCMS 信息采集插件能够采集网站内容至CMS系统中",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "license": "GPL-3.0",
   "publisher": "sscms",
   "engines": {

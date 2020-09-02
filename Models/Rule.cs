@@ -69,8 +69,6 @@ namespace SSCMS.Gather.Models
 
         [DataColumn(Text = true)] public string ContentAttributes { get; set; }
 
-        [DataColumn(Text = true)] public string ContentAttributesXml { get; set; }
-
         public int GatherNum { get; set; }
 
         public bool IsSaveImage { get; set; }

@@ -58,6 +58,13 @@ namespace SSCMS.Gather.Controllers.Admin
                 attributes.Add(listItem);
             }
 
+            var addDateOption = new Option<string>(nameof(SSCMS.Models.Content.AddDate), "添加日期");
+            if (ListUtils.ContainsIgnoreCase(selectedAttributes, addDateOption.Value))
+            {
+                addDateOption.Selected = true;
+            }
+            attributes.Add(addDateOption);
+
             return new AttributesResult
             {
                 Attributes = attributes

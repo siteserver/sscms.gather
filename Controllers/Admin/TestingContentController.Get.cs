@@ -34,9 +34,8 @@ namespace SSCMS.Gather.Controllers.Admin
             var regexNextPage = GatherUtils.GetRegexUrl(rule.ContentNextPageStart, rule.ContentNextPageEnd);
             var regexTitle = GatherUtils.GetRegexTitle(rule.ContentTitleStart, rule.ContentTitleEnd);
             var contentAttributes = ListUtils.GetStringList(rule.ContentAttributes);
-            var attributesDict = TranslateUtils.JsonDeserialize<Dictionary<string, string>>(rule.ContentAttributesXml);
 
-            var attributes = GatherUtils.GetContentNameValueCollection(rule.Charset, request.ContentUrl, rule.CookieString, regexContentExclude, rule.ContentHtmlClearCollection, rule.ContentHtmlClearTagCollection, regexTitle, regexContent, regexContent2, regexContent3, regexNextPage, regexChannel, contentAttributes, attributesDict);
+            var attributes = GatherUtils.GetContentNameValueCollection(rule.Charset, request.ContentUrl, rule.CookieString, regexContentExclude, rule.ContentHtmlClearCollection, rule.ContentHtmlClearTagCollection, regexTitle, regexContent, regexContent2, regexContent3, regexNextPage, regexChannel, contentAttributes, rule);
 
             var list = new List<KeyValuePair<string, string>>();
 

@@ -44,7 +44,7 @@ var methods = {
       $this.rule = res.rule;
       $this.channels = res.channels;
       $this.form = {
-        channelIds: [],
+        channelIds: res.channelIds,
         channelId: res.rule.channelId,
         gatherNum: res.rule.gatherNum,
         isChecked: res.rule.isChecked,
@@ -59,9 +59,6 @@ var methods = {
         serializeIsAddZero: res.rule.serializeIsAddZero,
         urlInclude: res.rule.urlInclude,
       };
-      if ($this.rule.channelId) {
-        $this.form.channelIds = [$this.rule.channelId];
-      }
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -72,13 +69,7 @@ var methods = {
   apiSubmit: function () {
     var $this = this;
 
-    this.form.channelId = 0;
-    var obj = this.form.channelIds[0];
-    if (Array.isArray(obj)) {
-      this.form.channelId = obj[obj.length - 1];
-    } else {
-      this.form.channelId = obj;
-    }
+    this.form.channelId = this.form.channelIds[this.form.channelIds.length - 1];
 
     utils.loading(this, true);
     $api.post($url, {

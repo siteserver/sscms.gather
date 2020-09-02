@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Gather.Core;
+using SSCMS.Utils;
 
 namespace SSCMS.Gather.Controllers.Admin
 {
@@ -27,10 +29,20 @@ namespace SSCMS.Gather.Controllers.Admin
                     };
                 });
 
+            var channel = await _channelRepository.GetAsync(rule.ChannelId);
+            var channelIds = new List<int>();
+            if (channel != null)
+            {
+                channelIds = ListUtils.GetIntList(channel.ParentsPath);
+                channelIds.Add(rule.ChannelId);
+                channelIds.Remove(site.Id);
+            }
+
             return new GetResult
             {
                 Rule = rule,
-                Channels = channels
+                Channels = channels,
+                ChannelIds = channelIds
             };
         }
     }

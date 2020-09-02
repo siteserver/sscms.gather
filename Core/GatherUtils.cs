@@ -596,7 +596,7 @@ namespace SSCMS.Gather.Core
             return contentUrls;
         }
 
-        public static NameValueCollection GetContentNameValueCollection(Charset charset, string url, string cookieString, string regexContentExclude, string contentHtmlClearCollection, string contentHtmlClearTagCollection, string regexTitle, string regexContent, string regexContent2, string regexContent3, string regexNextPage, string regexChannel, List<string> contentAttributes, Dictionary<string, string> attributesDict)
+        public static NameValueCollection GetContentNameValueCollection(Charset charset, string url, string cookieString, string regexContentExclude, string contentHtmlClearCollection, string contentHtmlClearTagCollection, string regexTitle, string regexContent, string regexContent2, string regexContent3, string regexNextPage, string regexChannel, List<string> contentAttributes, Rule rule)
         {
             var attributes = new NameValueCollection();
 
@@ -654,8 +654,8 @@ namespace SSCMS.Gather.Core
 
             foreach (var attributeName in contentAttributes)
             {
-                var normalStart = GetStartValue(attributesDict, attributeName);
-                var normalEnd = GetEndValue(attributesDict, attributeName);
+                var normalStart = GetStartValue(rule, attributeName);
+                var normalEnd = GetEndValue(rule, attributeName);
                 var regex = GetRegexAttributeName(attributeName, normalStart, normalEnd);
                 var value = GetContent(attributeName, regex, contentHtml);
                 attributes.Set(attributeName, value);
@@ -664,31 +664,19 @@ namespace SSCMS.Gather.Core
             return attributes;
         }
 
-        public static string GetStartValue(Dictionary<string, string> attributesDict, string attributeName)
+        public static string GetStartValue(Rule rule, string attributeName)
         {
-            if (attributesDict.ContainsKey($"{attributeName}_start".ToLower()))
-            {
-                return attributesDict[$"{attributeName}_start".ToLower()];
-            }
-            return string.Empty;
+            return rule.Get($"{attributeName}Start", string.Empty);
         }
 
-        public static string GetEndValue(Dictionary<string, string> attributesDict, string attributeName)
+        public static string GetEndValue(Rule rule, string attributeName)
         {
-            if (attributesDict.ContainsKey($"{attributeName}_end".ToLower()))
-            {
-                return attributesDict[$"{attributeName}_end".ToLower()];
-            }
-            return string.Empty;
+            return rule.Get($"{attributeName}End", string.Empty);
         }
 
-        public static string GetDefaultValue(Dictionary<string, string> attributesDict, string attributeName)
+        public static string GetDefaultValue(Rule rule, string attributeName)
         {
-            if (attributesDict.ContainsKey($"{attributeName}_default".ToLower()))
-            {
-                return attributesDict[$"{attributeName}_default".ToLower()];
-            }
-            return string.Empty;
+            return rule.Get($"{attributeName}Default", string.Empty);
         }
 
         public static string GetPageContent(string previousPageContent, Charset charset, string url, string cookieString, string regexContentExclude, string contentHtmlClearCollection, string contentHtmlClearTagCollection, string regexContent, string regexContent2, string regexContent3, string regexNextPage)

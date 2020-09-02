@@ -20,13 +20,11 @@ namespace SSCMS.Gather.Controllers.Admin
             Rule rule;
             List<string> contentHtmlClearList;
             List<string> contentHtmlClearTagList;
-            Dictionary<string, string> attributesDict;
             if (request.RuleId > 0)
             {
                 rule = await _ruleRepository.GetAsync(request.RuleId);
                 contentHtmlClearList = ListUtils.GetStringList(rule.ContentHtmlClearCollection);
                 contentHtmlClearTagList = ListUtils.GetStringList(rule.ContentHtmlClearTagCollection);
-                attributesDict = TranslateUtils.JsonDeserialize<Dictionary<string, string>>(rule.ContentAttributesXml);
             }
             else
             {
@@ -53,7 +51,6 @@ namespace SSCMS.Gather.Controllers.Admin
                         "div",
                         "span"
                     };
-                attributesDict = new Dictionary<string, string>();
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
@@ -69,14 +66,23 @@ namespace SSCMS.Gather.Controllers.Admin
 
             var charsetList = ListUtils.GetSelects<Charset>();
 
+            var channel = await _channelRepository.GetAsync(rule.ChannelId);
+            var channelIds = new List<int>();
+            if (channel != null)
+            {
+                channelIds = ListUtils.GetIntList(channel.ParentsPath);
+                channelIds.Add(rule.ChannelId);
+                channelIds.Remove(site.Id);
+            }
+
             return new GetResult
             {
                 Rule = rule,
                 Channels = channels,
+                ChannelIds = channelIds,
                 CharsetList = charsetList,
                 ContentHtmlClearList = contentHtmlClearList,
-                ContentHtmlClearTagList = contentHtmlClearTagList,
-                AttributesDict = attributesDict
+                ContentHtmlClearTagList = contentHtmlClearTagList
             };
         }
     }
