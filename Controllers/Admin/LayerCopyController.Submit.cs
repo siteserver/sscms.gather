@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
-using SSCMS.Extensions;
 using SSCMS.Gather.Core;
+using SSCMS.Utils;
 
 namespace SSCMS.Gather.Controllers.Admin
 {

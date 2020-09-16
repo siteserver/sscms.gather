@@ -8,7 +8,6 @@ using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
-using Config = SSCMS.Gather.Models.Config;
 
 namespace SSCMS.Gather.Core
 {
@@ -25,10 +24,9 @@ namespace SSCMS.Gather.Core
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
-        private readonly IPluginConfigRepository _pluginConfigRepository;
         private readonly IRuleRepository _ruleRepository;
 
-        public GatherManager(IPathManager pathManager, ICacheManager<ProgressCache> cacheManager, ITaskManager taskManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IPluginConfigRepository pluginConfigRepository, IRuleRepository ruleRepository)
+        public GatherManager(IPathManager pathManager, ICacheManager<ProgressCache> cacheManager, ITaskManager taskManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IRuleRepository ruleRepository)
         {
             _pathManager = pathManager;
             _cacheManager = cacheManager;
@@ -36,22 +34,11 @@ namespace SSCMS.Gather.Core
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;
-            _pluginConfigRepository = pluginConfigRepository;
             _ruleRepository = ruleRepository;
         }
 
         public const string PermissionsAdd = "gather_add";
         public const string PermissionsList = "gather_list";
-
-        public async Task<Config> GetConfigAsync(int siteId)
-        {
-            return await _pluginConfigRepository.GetConfigAsync<Config>(PluginId, siteId) ?? new Config();
-        }
-
-        public async Task<bool> SetConfigAsync(int siteId, Config config)
-        {
-            return await _pluginConfigRepository.SetConfigAsync(PluginId, siteId, config);
-        }
 
         public ProgressCache InitCache(string guid, string message)
         {

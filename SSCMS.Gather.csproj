@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="SSCMS" Version="7.0.0" />
+    <PackageReference Include="SSCMS" Version="7.0.1" />
   </ItemGroup>
 
 </Project>
