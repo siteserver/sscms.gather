@@ -33,7 +33,7 @@ namespace SSCMS.Gather.Controllers.Admin
                     SiteId = request.SiteId,
                     Charset = Charset.Utf8,
                     IsSaveImage = true,
-                    IsSetFirstImageAsImageUrl = true,
+                    ImageSource = ImageSource.None,
                     IsOrderByDesc = true,
                     GatherUrlIsCollection = true,
                     ContentHtmlClearCollection = "",

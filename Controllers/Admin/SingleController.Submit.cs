@@ -25,7 +25,7 @@ namespace SSCMS.Gather.Controllers.Admin
 
             var urls = ListUtils.GetStringList(request.Urls, '\n');
 
-            var guid = _gatherManager.Single(_authManager.AdminId, request.SiteId, request.RuleId, request.ChannelId, urls);
+            var guid = _gatherManager.Single(_authManager.AdminId, request.SiteId, request.RuleId, request.ChannelId, urls, null);
 
             return new StringResult
             {

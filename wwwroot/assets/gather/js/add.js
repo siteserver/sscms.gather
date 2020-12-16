@@ -90,6 +90,8 @@ var methods = {
   apiSubmit: function () {
     var $this = this;
 
+    this.form.channelId = this.form.channelIds[this.form.channelIds.length - 1];
+
     this.form.contentAttributeList = [];
     for (var i = 0; i < this.attributes.length; i++) {
       var attribute = this.attributes[i];

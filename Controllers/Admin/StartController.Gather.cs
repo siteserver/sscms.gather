@@ -16,7 +16,7 @@ namespace SSCMS.Gather.Controllers.Admin
             }
 
             //Task.Run(async () => await Main.GatherRuleRepository.GatherListAsync(adminInfo, siteId, ruleId, guid, false)).ConfigureAwait(false).GetAwaiter();
-            _gatherManager.Start(_authManager.AdminId, request.SiteId, request.RuleId, request.Guid, false);
+            _gatherManager.Start(_authManager.AdminId, request.SiteId, request.RuleId, request.Guid);
 
             return new BoolResult
             {

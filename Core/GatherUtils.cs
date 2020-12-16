@@ -27,7 +27,7 @@ namespace SSCMS.Gather.Core
         public static List<string> GetOriginalImageSrcList(string html)
         {
             var regex = "(img|input)[^><]*\\s+src\\s*=\\s*(?:\"(?<url>[^\"]*)\"|'(?<url>[^']*)'|(?<url>[^>\\s]*))";
-            return GetContents("url", regex, html);
+            return GetValues("url", regex, html);
         }
 
         public static List<string> GetLinkHrefList(string baseUrl, string html)
@@ -39,7 +39,7 @@ namespace SSCMS.Gather.Core
         public static List<string> GetOriginalLinkHrefList(string html)
         {
             var regex = "a[^><]*\\s+href\\s*=\\s*(?:\"(?<url>[^\"]*)\"|'(?<url>[^']*)'|(?<url>[^>\\s]*))";
-            return GetContents("url", regex, html);
+            return GetValues("url", regex, html);
         }
 
         public static List<string> GetFlashSrcList(string baseUrl, string html)
@@ -51,7 +51,7 @@ namespace SSCMS.Gather.Core
         public static List<string> GetOriginalFlashSrcList(string html)
         {
             var regex = "embed\\s+[^><]*src\\s*=\\s*(?:\"(?<url>[^\"]*)\"|'(?<url>[^']*)'|(?<url>[^>\\s]*))|param\\s+[^><]*value\\s*=\\s*(?:\"(?<url>[^\"]*)\"|'(?<url>[^']*)'|(?<url>[^>\\s]*))";
-            return GetContents("url", regex, html);
+            return GetValues("url", regex, html);
         }
 
         public static bool IsImage(string fileExtName)
@@ -64,7 +64,7 @@ namespace SSCMS.Gather.Core
             {
                 fileExtName = "." + fileExtName;
             }
-            if (fileExtName == ".bmp" || fileExtName == ".gif" || fileExtName == ".jpg" || fileExtName == ".jpeg" || fileExtName == ".png" || fileExtName == ".pneg" || fileExtName == ".webp")
+            if (fileExtName == ".bmp" || fileExtName == ".gif" || fileExtName == ".jpg" || fileExtName == ".jpeg" || fileExtName == ".png" || fileExtName == ".pneg" || fileExtName == ".webp" || fileExtName == ".svg")
             {
                 retVal = true;
             }
@@ -87,7 +87,7 @@ namespace SSCMS.Gather.Core
 
         public static List<string> GetOriginalStyleImageUrls(string html)
         {
-            var list = GetContents("url", "url\\((?<url>[^\\(\\)]*)\\)", html);
+            var list = GetValues("url", "url\\((?<url>[^\\(\\)]*)\\)", html);
             var urlList = new List<string>();
             foreach (var url in list)
             {
@@ -106,7 +106,7 @@ namespace SSCMS.Gather.Core
 
         public static List<string> GetOriginalBackgroundImageSrcList(string html)
         {
-            return GetContents("url", "background\\s*=\\s*(?:\"(?<url>[^\"]*)\"|'(?<url>[^']*)'|(?<url>[^>\\s]*))", html);
+            return GetValues("url", "background\\s*=\\s*(?:\"(?<url>[^\"]*)\"|'(?<url>[^']*)'|(?<url>[^>\\s]*))", html);
         }
 
         public static List<string> GetCssHrefList(string baseUrl, string html)
@@ -118,7 +118,7 @@ namespace SSCMS.Gather.Core
 
         public static List<string> GetOriginalCssHrefList(string html)
         {
-            return GetContents("url", "link\\s+[^><]*href\\s*=\\s*(?:\"(?<url>[^\"]*)\"|'(?<url>[^']*)'|(?<url>[^>\\s]*))|\\@import\\s*url\\s*\\(\\s*(?:\"(?<url>[^\"]*)\"|'(?<url>[^']*)'|(?<url>.*?))\\s*\\)", html);
+            return GetValues("url", "link\\s+[^><]*href\\s*=\\s*(?:\"(?<url>[^\"]*)\"|'(?<url>[^']*)'|(?<url>[^>\\s]*))|\\@import\\s*url\\s*\\(\\s*(?:\"(?<url>[^\"]*)\"|'(?<url>[^']*)'|(?<url>.*?))\\s*\\)", html);
         }
 
         public static List<string> GetScriptSrcList(string baseUrl, string html)
@@ -128,7 +128,7 @@ namespace SSCMS.Gather.Core
 
         public static List<string> GetOriginalScriptSrcList(string html)
         {
-            return GetContents("url", "script\\s+[^><]*src\\s*=\\s*(?:\"(?<url>[^\"]*)\"|'(?<url>[^']*)'|(?<url>[^>\\s]*))", html);
+            return GetValues("url", "script\\s+[^><]*src\\s*=\\s*(?:\"(?<url>[^\"]*)\"|'(?<url>[^']*)'|(?<url>[^>\\s]*))", html);
         }
 
         //public static List<string> GetTagInnerContents(string tagName, string html)
@@ -183,6 +183,12 @@ namespace SSCMS.Gather.Core
             return GetUrls(regex, html, baseUrl);
         }
 
+        public static List<string> GetImageUrls(string html, string baseUrl)
+        {
+            var regex = "<img\\s*.*?src\\s*=\\s*(?:\"(?<url>[^\"]*)\"|'(?<url>[^']*)'|(?<url>[^>\\s]*)).*?>";
+            return GetUrls(regex, html, baseUrl);
+        }
+
         public static List<string> GetUrls(string regex, string html, string baseUrl)
         {
             var urlList = new List<string>();
@@ -191,7 +197,7 @@ namespace SSCMS.Gather.Core
                 regex = "<a\\s*.*?href\\s*=\\s*(?:\"(?<url>[^\"]*)\"|'(?<url>[^']*)'|(?<url>[^>\\s]*)).*?>";
             }
             var groupName = "url";
-            var list = GetContents(groupName, regex, html);
+            var list = GetValues(groupName, regex, html);
             foreach (var rawUrl in list)
             {
                 var url = GetUrlByBaseUrl(rawUrl, baseUrl);
@@ -327,10 +333,10 @@ namespace SSCMS.Gather.Core
 
         public static string GetUrl(string regex, string html, string baseUrl)
         {
-            return GetUrlByBaseUrl(GetContent("url", regex, html), baseUrl);
+            return GetUrlByBaseUrl(GetValue("url", regex, html), baseUrl);
         }
 
-        public static string GetContent(string groupName, string regex, string html)
+        public static string GetValue(string groupName, string regex, string html)
         {
             var content = string.Empty;
             if (string.IsNullOrEmpty(regex)) return content;
@@ -347,6 +353,25 @@ namespace SSCMS.Gather.Core
             }
 
             return content;
+        }
+
+        public static List<string> GetValues(string groupName, string regex, string html)
+        {
+            var list = new List<string>();
+            if (string.IsNullOrEmpty(regex)) return list;
+
+            var reg = new Regex(regex, Options);
+
+            for (var match = reg.Match(html); match.Success; match = match.NextMatch())
+            {
+                //list.Add(match.Groups[groupName].Value);
+                var theValue = match.Groups[groupName].Value;
+                if (!list.Contains(theValue))
+                {
+                    list.Add(theValue);
+                }
+            }
+            return list;
         }
 
         public static string Replace(string regex, string input, string replacement)
@@ -372,25 +397,6 @@ namespace SSCMS.Gather.Core
         {
             var reg = new Regex(regex, Options);
             return reg.IsMatch(input);
-        }
-
-        public static List<string> GetContents(string groupName, string regex, string html)
-        {
-            var list = new List<string>();
-            if (string.IsNullOrEmpty(regex)) return list;
-
-            var reg = new Regex(regex, Options);
-
-            for (var match = reg.Match(html); match.Success; match = match.NextMatch())
-            {
-                //list.Add(match.Groups[groupName].Value);
-                var theValue = match.Groups[groupName].Value;
-                if (!list.Contains(theValue))
-                {
-                    list.Add(theValue);
-                }
-            }
-            return list;
         }
 
         public static string RemoveScripts(string html)
@@ -530,10 +536,18 @@ namespace SSCMS.Gather.Core
             return gatherUrls;
         }
 
-        public static List<string> GetContentUrlList(Rule rule, string regexListArea, string regexUrlInclude, ProgressCache cache)
+        public static (List<string> contentUrls, List<string> imageUrls) GetContentAndImageUrlList(Rule rule, string regexListArea, ProgressCache cache)
         {
             var gatherUrls = GetGatherUrlList(rule);
             var contentUrls = new List<string>();
+            var imageUrls = new List<string>();
+
+            var regexContentUrl = GatherUtils.GetRegexUrl(rule.ContentUrlStart, rule.ContentUrlEnd);
+            var regexImageUrl = string.Empty;
+            if (rule.ImageSource == ImageSource.List)
+            {
+                regexImageUrl = GatherUtils.GetRegexUrl(rule.ImageUrlStart, rule.ImageUrlEnd);
+            }
 
             foreach (var gatherUrl in gatherUrls)
             {
@@ -542,8 +556,9 @@ namespace SSCMS.Gather.Core
 
                 try
                 {
-                    var urls = GetContentUrls(gatherUrl, rule.Charset, rule.CookieString, regexListArea, regexUrlInclude);
-                    contentUrls.AddRange(urls);
+                    var urls = GetContentAndImageUrls(gatherUrl, rule.Charset, rule.CookieString, regexListArea, regexContentUrl, regexImageUrl);
+                    contentUrls.AddRange(urls.contentUrls);
+                    imageUrls.AddRange(urls.imageUrls);
                 }
                 catch (Exception ex)
                 {
@@ -556,44 +571,117 @@ namespace SSCMS.Gather.Core
             if (rule.IsOrderByDesc)
             {
                 contentUrls.Reverse();
+                imageUrls.Reverse();
             }
-            return contentUrls;
+            return (contentUrls, imageUrls);
         }
 
-        public static List<string> GetContentUrls(string gatherUrl, Charset charset, string cookieString, string regexListArea, string regexUrlInclude)
+        public static (List<string> contentUrls, List<string> imageUrls) GetContentAndImageUrls(string gatherUrl, Charset charset, string cookieString, string regexListArea, string regexContentUrl, string regexImageUrl)
         {
-            var contentUrls = new List<string>();
             if (!WebClientUtils.GetRemoteHtml(gatherUrl, charset, cookieString, out var listHtml, out var errorMessage))
             {
                 throw new Exception(errorMessage);
             }
             var areaHtml = string.Empty;
-
             if (!string.IsNullOrEmpty(regexListArea))
             {
-                areaHtml = GetContent("area", regexListArea, listHtml);
+                areaHtml = GetValue("area", regexListArea, listHtml);
             }
 
-            var urlsList = GetUrls(!string.IsNullOrEmpty(areaHtml) ? areaHtml : listHtml, gatherUrl);
+            var html = !string.IsNullOrEmpty(areaHtml) ? areaHtml : listHtml;
 
-            var isInclude = !string.IsNullOrEmpty(regexUrlInclude);
+            var contentUrls = GetValues("url", regexContentUrl, html);
+            var imageUrls = GetValues("url", regexImageUrl, html);
 
-            foreach (var url in urlsList)
+            var myUri = new Uri(gatherUrl);
+            var host = myUri.Scheme + "://" + myUri.Host;
+            if (!myUri.IsDefaultPort)
             {
-                if (!string.IsNullOrEmpty(url))
+                host += ":" + myUri.Port;
+            }
+
+            var contentUrlList = new List<string>();
+            foreach (var contentUrl in contentUrls)
+            {
+                if (string.IsNullOrEmpty(contentUrl)) continue;
+
+                var url = string.Empty;
+                if (PageUtils.IsProtocolUrl(contentUrl))
                 {
-                    var contentUrl = url.Replace("&amp;", "&");
-                    if (isInclude && !IsMatch(regexUrlInclude, contentUrl))
-                    {
-                        continue;
-                    }
-                    if (!contentUrls.Contains(contentUrl))
-                    {
-                        contentUrls.Add(contentUrl);
-                    }
+                    url = contentUrl;
+                }
+                else if (contentUrl.StartsWith('/'))
+                {
+                    url = PageUtils.Combine(host, contentUrl);
+                }
+
+                if (string.IsNullOrEmpty(url)) continue;
+
+                if (!contentUrlList.Contains(url))
+                {
+                    contentUrlList.Add(url);
                 }
             }
-            return contentUrls;
+
+            var imageUrlList = new List<string>();
+            foreach (var imageUrl in imageUrls)
+            {
+                if (string.IsNullOrEmpty(imageUrl)) continue;
+
+                var url = string.Empty;
+                if (PageUtils.IsProtocolUrl(imageUrl))
+                {
+                    url = imageUrl;
+                }
+                else if (imageUrl.StartsWith('/'))
+                {
+                    url = PageUtils.Combine(host, imageUrl);
+                }
+
+                if (string.IsNullOrEmpty(url)) continue;
+
+                if (!imageUrlList.Contains(url))
+                {
+                    imageUrlList.Add(url);
+                }
+            }
+
+            //var urlsList = GetUrls(html, gatherUrl);
+            //var imageUrlsList = GetImageUrls(html, gatherUrl);
+
+            //foreach (var url in urlsList)
+            //{
+            //    if (!string.IsNullOrEmpty(url))
+            //    {
+            //        var contentUrl = url.Replace("&amp;", "&");
+            //        if (isUrlInclude && !IsMatch(regexUrlInclude, contentUrl))
+            //        {
+            //            continue;
+            //        }
+            //        if (!contentUrls.Contains(contentUrl))
+            //        {
+            //            contentUrls.Add(contentUrl);
+            //        }
+            //    }
+            //}
+
+            //foreach (var url in imageUrlsList)
+            //{
+            //    if (!string.IsNullOrEmpty(url))
+            //    {
+            //        var imageUrl = url.Replace("&amp;", "&");
+            //        if (isImageUrlInclude && !IsMatch(regexImageUrlInclude, imageUrl))
+            //        {
+            //            continue;
+            //        }
+            //        if (!imageUrls.Contains(imageUrl))
+            //        {
+            //            imageUrls.Add(imageUrl);
+            //        }
+            //    }
+            //}
+
+            return (contentUrlList, imageUrlList);
         }
 
         public static NameValueCollection GetContentNameValueCollection(Charset charset, string url, string cookieString, string regexContentExclude, string contentHtmlClearCollection, string contentHtmlClearTagCollection, string regexTitle, string regexContent, string regexContent2, string regexContent3, string regexNextPage, string regexChannel, List<string> contentAttributes, Rule rule)
@@ -604,15 +692,15 @@ namespace SSCMS.Gather.Core
             {
                 throw new Exception(errorMessage);
             }
-            var title = GetContent("title", regexTitle, contentHtml);
-            var content = GetContent("content", regexContent, contentHtml);
+            var title = GetValue("title", regexTitle, contentHtml);
+            var content = GetValue("content", regexContent, contentHtml);
             if (string.IsNullOrEmpty(content) && !string.IsNullOrEmpty(regexContent2))
             {
-                content = GetContent("content", regexContent2, contentHtml);
+                content = GetValue("content", regexContent2, contentHtml);
             }
             if (string.IsNullOrEmpty(content) && !string.IsNullOrEmpty(regexContent3))
             {
-                content = GetContent("content", regexContent3, contentHtml);
+                content = GetValue("content", regexContent3, contentHtml);
             }
 
             if (!string.IsNullOrEmpty(regexContentExclude))
@@ -646,7 +734,7 @@ namespace SSCMS.Gather.Core
                 content = GetPageContent(content, charset, contentNextPageUrl, cookieString, regexContentExclude, contentHtmlClearCollection, contentHtmlClearTagCollection, regexContent, regexContent2, regexContent3, regexNextPage);
             }
 
-            var channel = GetContent("channel", regexChannel, contentHtml);
+            var channel = GetValue("channel", regexChannel, contentHtml);
 
             attributes.Add("Title", title);
             attributes.Add("Channel", channel);
@@ -657,7 +745,7 @@ namespace SSCMS.Gather.Core
                 var normalStart = GetStartValue(rule, attributeName);
                 var normalEnd = GetEndValue(rule, attributeName);
                 var regex = GetRegexAttributeName(attributeName, normalStart, normalEnd);
-                var value = GetContent(attributeName, regex, contentHtml);
+                var value = GetValue(attributeName, regex, contentHtml);
                 attributes.Set(attributeName, value);
             }
 
@@ -686,14 +774,14 @@ namespace SSCMS.Gather.Core
             {
                 throw new Exception(errorMessage);
             }
-            var nextPageContent = GetContent("content", regexContent, contentHtml);
+            var nextPageContent = GetValue("content", regexContent, contentHtml);
             if (string.IsNullOrEmpty(nextPageContent) && !string.IsNullOrEmpty(regexContent2))
             {
-                nextPageContent = GetContent("content", regexContent2, contentHtml);
+                nextPageContent = GetValue("content", regexContent2, contentHtml);
             }
             if (string.IsNullOrEmpty(nextPageContent) && !string.IsNullOrEmpty(regexContent3))
             {
-                nextPageContent = GetContent("content", regexContent3, contentHtml);
+                nextPageContent = GetValue("content", regexContent3, contentHtml);
             }
 
             if (!string.IsNullOrEmpty(nextPageContent))

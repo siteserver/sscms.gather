@@ -24,7 +24,7 @@
     <el-progress :text-inside="true" :stroke-width="24" :percentage="percentage" status="success"></el-progress>
 
     <h4 v-if="cache.totalCount > 0">
-        共获取到 <strong>{{cache.totalCount}}</strong> 篇内容，成功采集到 <strong>{{cache.successCount}}</strong> 篇内容
+      共获取到 <strong>{{cache.totalCount}}</strong> 篇内容，成功采集到 <strong>{{cache.successCount}}</strong> 篇内容
     </h4>
     <el-alert
     v-if="cache.isSuccess"
@@ -117,10 +117,6 @@
         <el-checkbox v-model="form.serializeIsAddZero" :label="true">补零</el-checkbox>
       </el-form-item>
     </template>
-    <el-form-item label="内容地址包含" prop="urlInclude" :rules="{ required: true, message: '请输入内容地址包含' }">
-      <el-input type="textarea" :rows="5" id="urlInclude" v-model="form.urlInclude"></el-input>
-      <div class="tips">遇到变动字符请<el-link :underline="false" type="primary" v-on:click="insert('urlInclude', '*')">插入 * 通配符</el-link>，多个条件请<el-link :underline="false" type="primary" v-on:click="insert('urlInclude', '|')">插入 | 通配符</el-link></div>
-    </el-form-item>
     
   </el-form>
   

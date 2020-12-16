@@ -69,7 +69,7 @@ namespace SSCMS.Gather.Controllers.Admin
             public Charset Charset { get; set; }
             public int GatherNum { get; set; }
             public bool IsSaveImage { get; set; }
-            public bool IsSetFirstImageAsImageUrl { get; set; }
+            public ImageSource ImageSource { get; set; }
             public bool IsSaveFiles { get; set; }
             public bool IsEmptyContentAllowed { get; set; }
             public bool IsSameTitleAllowed { get; set; }
@@ -84,7 +84,10 @@ namespace SSCMS.Gather.Controllers.Admin
             public int SerializeInterval { get; set; }
             public bool SerializeIsOrderByDesc { get; set; }
             public bool SerializeIsAddZero { get; set; }
-            public string UrlInclude { get; set; }
+            public string ContentUrlStart { get; set; }
+            public string ContentUrlEnd { get; set; }
+            public string ImageUrlStart { get; set; }
+            public string ImageUrlEnd { get; set; }
             public string ContentTitleStart { get; set; }
             public string ContentTitleEnd { get; set; }
             public string ContentContentStart { get; set; }

@@ -16,8 +16,11 @@ namespace SSCMS.Gather.Controllers.Admin
     public partial class ListController : ControllerBase
     {
         private const string Route = "gather/list";
+        private const string RouteExport = "gather/list/actions/export";
+        private const string RouteImport = "gather/list/actions/import";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
         private readonly IGatherManager _gatherManager;
         private readonly IRuleRepository _ruleRepository;
         private readonly ISiteRepository _siteRepository;
@@ -25,9 +28,10 @@ namespace SSCMS.Gather.Controllers.Admin
         private readonly IContentRepository _contentRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
 
-        public ListController(IAuthManager authManager, IGatherManager gatherManager, IRuleRepository ruleRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITableStyleRepository tableStyleRepository)
+        public ListController(IAuthManager authManager, IPathManager pathManager, IGatherManager gatherManager, IRuleRepository ruleRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITableStyleRepository tableStyleRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
             _gatherManager = gatherManager;
             _ruleRepository = ruleRepository;
             _siteRepository = siteRepository;
@@ -49,6 +53,11 @@ namespace SSCMS.Gather.Controllers.Admin
         public class DeleteResult
         {
             public List<Rule> Rules { get; set; }
+        }
+
+        public class ExportRequest : SiteRequest
+        {
+            public int RuleId { get; set; }
         }
     }
 }

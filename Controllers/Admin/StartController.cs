@@ -65,7 +65,6 @@ namespace SSCMS.Gather.Controllers.Admin
             public int SerializeInterval { get; set; }
             public bool SerializeIsOrderByDesc { get; set; }
             public bool SerializeIsAddZero { get; set; }
-            public string UrlInclude { get; set; }
         }
 
         public class GatherRequest : SiteRequest

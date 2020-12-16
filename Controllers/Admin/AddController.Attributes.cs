@@ -65,6 +65,13 @@ namespace SSCMS.Gather.Controllers.Admin
             }
             attributes.Add(addDateOption);
 
+            var hitsOption = new Option<string>(nameof(SSCMS.Models.Content.Hits), "点击量");
+            if (ListUtils.ContainsIgnoreCase(selectedAttributes, hitsOption.Value))
+            {
+                hitsOption.Selected = true;
+            }
+            attributes.Add(hitsOption);
+
             return new AttributesResult
             {
                 Attributes = attributes

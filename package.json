@@ -2,17 +2,21 @@
   "name": "gather",
   "displayName": "信息采集插件",
   "description": "SSCMS 信息采集插件能够采集网站内容至CMS系统中",
-  "version": "1.0.5",
+  "version": "1.0.10",
   "license": "GPL-3.0",
   "publisher": "sscms",
   "engines": {
-    "sscms": "^7.0.0"
+    "sscms": "^7.0.5"
   },
   "categories": [
     "Other"
   ],
   "keywords": [
-    "内容"
+    "采集",
+    "内容采集",
+    "页面采集",
+    "图片下载",
+    "附件下载"
   ],
   "repository": {
     "type": "git",
@@ -71,124 +75,8 @@
             "dataType": "Integer"
           },
           {
-            "attributeName": "CookieString",
-            "dataType": "Text"
-          },
-          {
-            "attributeName": "GatherUrlIsCollection",
-            "dataType": "Boolean"
-          },
-          {
-            "attributeName": "GatherUrlCollection",
-            "dataType": "Text"
-          },
-          {
-            "attributeName": "GatherUrlIsSerialize",
-            "dataType": "Boolean"
-          },
-          {
-            "attributeName": "GatherUrlSerialize",
-            "dataType": "Text"
-          },
-          {
-            "attributeName": "SerializeFrom",
-            "dataType": "Integer"
-          },
-          {
-            "attributeName": "SerializeTo",
-            "dataType": "Integer"
-          },
-          {
-            "attributeName": "SerializeInterval",
-            "dataType": "Integer"
-          },
-          {
-            "attributeName": "SerializeIsOrderByDesc",
-            "dataType": "Boolean"
-          },
-          {
-            "attributeName": "SerializeIsAddZero",
-            "dataType": "Boolean"
-          },
-          {
-            "attributeName": "ChannelId",
-            "dataType": "Integer"
-          },
-          {
-            "attributeName": "Charset",
-            "dataType": "VarChar"
-          },
-          {
-            "attributeName": "UrlInclude",
-            "dataType": "Text"
-          },
-          {
-            "attributeName": "TitleInclude",
-            "dataType": "Text"
-          },
-          {
-            "attributeName": "ContentExclude",
-            "dataType": "Text"
-          },
-          {
-            "attributeName": "ContentHtmlClearCollection",
-            "dataType": "Text"
-          },
-          {
-            "attributeName": "ContentHtmlClearTagCollection",
-            "dataType": "Text"
-          },
-          {
             "attributeName": "LastGatherDate",
             "dataType": "DateTime"
-          },
-          {
-            "attributeName": "ListAreaStart",
-            "dataType": "Text"
-          },
-          {
-            "attributeName": "ListAreaEnd",
-            "dataType": "Text"
-          },
-          {
-            "attributeName": "ContentChannelStart",
-            "dataType": "Text"
-          },
-          {
-            "attributeName": "ContentChannelEnd",
-            "dataType": "Text"
-          },
-          {
-            "attributeName": "ContentTitleStart",
-            "dataType": "Text"
-          },
-          {
-            "attributeName": "ContentTitleEnd",
-            "dataType": "Text"
-          },
-          {
-            "attributeName": "ContentContentStart",
-            "dataType": "Text"
-          },
-          {
-            "attributeName": "ContentContentEnd",
-            "dataType": "Text"
-          },
-          {
-            "attributeName": "ContentNextPageStart",
-            "dataType": "Text"
-          },
-          {
-            "attributeName": "ContentNextPageEnd",
-            "dataType": "Text"
-          },
-          {
-            "attributeName": "ContentAttributes",
-            "dataType": "Text"
-          },
-          {
-            "attributeName": "ContentAttributesXml",
-            "dataType": "Text"
           }
         ]
       }

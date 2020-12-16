@@ -1,5 +1,4 @@
 var $url = '/gather/testing';
-var $urlActionsGetContentUrls = '/gather/testing/actions/getContentUrls';
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
@@ -7,7 +6,8 @@ var data = utils.init({
   rule: null,
   gatherUrls: null,
   listUrl: null,
-  contentUrls: null
+  contentUrls: null,
+  imageUrls: null
 });
 
 var methods = {
@@ -33,11 +33,11 @@ var methods = {
     });
   },
 
-  apiGetContentUrls: function () {
+  apiSubmit: function () {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($urlActionsGetContentUrls, {
+    $api.post($url, {
       siteId: this.siteId,
       ruleId: this.ruleId,
       gatherUrl: this.listUrl
@@ -45,6 +45,7 @@ var methods = {
       var res = response.data;
 
       $this.contentUrls = res.contentUrls;
+      $this.imageUrls = res.imageUrls;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -52,8 +53,16 @@ var methods = {
     });
   },
 
+  getImageUrl: function(contentUrl) {
+    var index = this.contentUrls.indexOf(contentUrl);
+    if (index !== -1 && this.imageUrls.length > index) {
+      return this.imageUrls[index];
+    }
+    return '';
+  },
+
   btnGetContentUrls: function () {
-    this.apiGetContentUrls();
+    this.apiSubmit();
   },
 
   btnGetContent: function(contentUrl) {

@@ -20,8 +20,7 @@ var data = utils.init({
     serializeTo: null,
     serializeInterval: null,
     serializeIsOrderByDesc: null,
-    serializeIsAddZero: null,
-    urlInclude: null,
+    serializeIsAddZero: null
   },
   guid: null,
   cache: {},
@@ -56,8 +55,7 @@ var methods = {
         serializeTo: res.rule.serializeTo,
         serializeInterval: res.rule.serializeInterval,
         serializeIsOrderByDesc: res.rule.serializeIsOrderByDesc,
-        serializeIsAddZero: res.rule.serializeIsAddZero,
-        urlInclude: res.rule.urlInclude,
+        serializeIsAddZero: res.rule.serializeIsAddZero
       };
     }).catch(function (error) {
       utils.error(error);
@@ -86,8 +84,7 @@ var methods = {
       serializeTo: this.form.serializeTo,
       serializeInterval: this.form.serializeInterval,
       serializeIsOrderByDesc: this.form.serializeIsOrderByDesc,
-      serializeIsAddZero: this.form.serializeIsAddZero,
-      urlInclude: this.form.urlInclude,
+      serializeIsAddZero: this.form.serializeIsAddZero
     }).then(function (response) {
       var res = response.data;
       $this.guid = res.value;
@@ -132,7 +129,7 @@ var methods = {
       $this.cache = res.cache || {};
       if ($this.cache.totalCount > 0) {
         $this.percentage = (($this.cache.successCount/$this.cache.totalCount) * 100).toFixed(1);
-      }else {
+      } else {
         $this.percentage = 0;
       }
       

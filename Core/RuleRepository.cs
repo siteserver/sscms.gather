@@ -55,6 +55,14 @@ namespace SSCMS.Gather.Core
             return await _repository.GetAsync(ruleId);
         }
 
+        public async Task<Rule> GetByRuleNameAsync(int siteId, string ruleName)
+        {
+            return await _repository.GetAsync(Q
+                .Where(Attr.SiteId, siteId)
+                .Where(Attr.RuleName, ruleName)
+            );
+        }
+
         public async Task<IEnumerable<(int Id, int SiteId)>> GetRuleIdsAsync(List<int> includes, List<int> excludes)
         {
             var query = Q

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Gather.Core;
@@ -30,7 +31,7 @@ namespace SSCMS.Gather.Controllers.Admin
             rule.SerializeInterval = request.SerializeInterval;
             rule.SerializeIsOrderByDesc = request.SerializeIsOrderByDesc;
             rule.SerializeIsAddZero = request.SerializeIsAddZero;
-            rule.UrlInclude = request.UrlInclude;
+            rule.LastGatherDate = DateTime.Now;
 
             await _ruleRepository.UpdateAsync(rule);
 

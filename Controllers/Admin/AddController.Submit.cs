@@ -32,7 +32,7 @@ namespace SSCMS.Gather.Controllers.Admin
             rule.GatherNum = request.GatherNum;
             rule.IsSaveImage = request.IsSaveImage;
             rule.IsSaveFiles = request.IsSaveFiles;
-            rule.IsSetFirstImageAsImageUrl = request.IsSetFirstImageAsImageUrl;
+            rule.ImageSource = request.ImageSource;
             rule.IsEmptyContentAllowed = request.IsEmptyContentAllowed;
             rule.IsSameTitleAllowed = request.IsSameTitleAllowed;
             rule.IsChecked = request.IsChecked;
@@ -46,7 +46,10 @@ namespace SSCMS.Gather.Controllers.Admin
             rule.SerializeInterval = request.SerializeInterval;
             rule.SerializeIsOrderByDesc = request.SerializeIsOrderByDesc;
             rule.SerializeIsAddZero = request.SerializeIsAddZero;
-            rule.UrlInclude = request.UrlInclude;
+            rule.ContentUrlStart = request.ContentUrlStart;
+            rule.ContentUrlEnd = request.ContentUrlEnd;
+            rule.ImageUrlStart = request.ImageUrlStart;
+            rule.ImageUrlEnd = request.ImageUrlEnd;
             rule.ContentTitleStart = request.ContentTitleStart;
             rule.ContentTitleEnd = request.ContentTitleEnd;
             rule.ContentContentStart = request.ContentContentStart;
@@ -64,6 +67,7 @@ namespace SSCMS.Gather.Controllers.Admin
             rule.ContentExclude = request.ContentExclude;
             rule.ContentHtmlClearCollection = ListUtils.ToString(request.ContentHtmlClearList);
             rule.ContentHtmlClearTagCollection = ListUtils.ToString(request.ContentHtmlClearTagList);
+
             rule.ContentAttributes = ListUtils.ToString(request.ContentAttributeList);
             if (request.ContentAttributeList != null)
             {

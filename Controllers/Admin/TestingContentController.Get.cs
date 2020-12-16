@@ -39,7 +39,7 @@ namespace SSCMS.Gather.Controllers.Admin
 
             var list = new List<KeyValuePair<string, string>>();
 
-            //var contentAttributes = Context.ContentApi.GetInputStyles(siteId, ruleInfo.ChannelId);
+            //var contentAttributes = Context.ContentApi.GetInputStyles(siteId, rule.ChannelId);
 
             foreach (var attributeName in attributes.AllKeys)
             {

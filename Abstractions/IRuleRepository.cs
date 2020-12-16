@@ -14,6 +14,8 @@ namespace SSCMS.Gather.Abstractions
 
         Task<Rule> GetAsync(int ruleId);
 
+        Task<Rule> GetByRuleNameAsync(int siteId, string ruleName);
+
         Task<IEnumerable<(int Id, int SiteId)>> GetRuleIdsAsync(List<int> includes, List<int> excludes);
 
         Task<bool> IsExistsAsync(int siteId, string ruleName);

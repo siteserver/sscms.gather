@@ -1,8 +1,11 @@
 var $url = '/gather/list';
+var $urlExport = '/gather/list/actions/export';
+var $urlImport = '/gather/list/actions/import';
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   rules: null,
+  urlUpload: null
 });
 
 var methods = {
@@ -86,6 +89,10 @@ var methods = {
     });
   },
 
+  btnExportClick: function (rule) {
+    window.open($apiUrl + $urlExport + '?siteId=' + this.siteId + '&ruleId=' + rule.id + '&access_token=' + $token);
+  },
+
   btnDeleteClick: function (rule) {
     var $this = this;
 
@@ -96,6 +103,34 @@ var methods = {
         $this.apiDelete(rule);
       }
     });
+  },
+
+  uploadBefore(file) {
+    var re = /(\.json)$/i;
+    if(!re.exec(file.name))
+    {
+      utils.error('上传格式错误，请上传json压缩包!');
+      return false;
+    }
+
+    return true;
+  },
+
+  uploadProgress: function() {
+    utils.loading(this, true);
+  },
+
+  uploadSuccess: function(res, file) {
+    utils.loading(this, false);
+
+    utils.success('采集规则导入成功');
+    location.reload();
+  },
+
+  uploadError: function(err) {
+    utils.loading(this, false);
+    var error = JSON.parse(err.message);
+    utils.error(error.message);
   }
 };
 
@@ -105,5 +140,6 @@ var $vue = new Vue({
   methods: methods,
   created: function () {
     this.apiGet();
+    this.urlUpload = $apiUrl + $urlImport + '?siteId=' + this.siteId;
   }
 });
