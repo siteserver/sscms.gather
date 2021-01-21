@@ -88,6 +88,7 @@ namespace SSCMS.Gather.Controllers.Admin
             public string ContentUrlEnd { get; set; }
             public string ImageUrlStart { get; set; }
             public string ImageUrlEnd { get; set; }
+            public bool ContentTitleByList { get; set; }
             public string ContentTitleStart { get; set; }
             public string ContentTitleEnd { get; set; }
             public string ContentContentStart { get; set; }

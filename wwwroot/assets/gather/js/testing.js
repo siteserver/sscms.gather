@@ -6,8 +6,7 @@ var data = utils.init({
   rule: null,
   gatherUrls: null,
   listUrl: null,
-  contentUrls: null,
-  imageUrls: null
+  items: null
 });
 
 var methods = {
@@ -44,8 +43,7 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.contentUrls = res.contentUrls;
-      $this.imageUrls = res.imageUrls;
+      $this.items = res.items;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -53,23 +51,20 @@ var methods = {
     });
   },
 
-  getImageUrl: function(contentUrl) {
-    var index = this.contentUrls.indexOf(contentUrl);
-    if (index !== -1 && this.imageUrls.length > index) {
-      return this.imageUrls[index];
-    }
-    return '';
+  getImageUrl: function(item) {
+    return item.content.imageUrl;
   },
 
   btnGetContentUrls: function () {
     this.apiSubmit();
   },
 
-  btnGetContent: function(contentUrl) {
+  btnGetClick: function(item) {
     utils.addTab('测试获取内容', utils.getPageUrl('gather', 'testingContent', {
       siteId: this.siteId,
       ruleId: this.ruleId,
-      contentUrl: encodeURIComponent(contentUrl)
+      listUrl: encodeURIComponent(this.listUrl),
+      contentUrl: encodeURIComponent(item.url)
     }));
   },
 

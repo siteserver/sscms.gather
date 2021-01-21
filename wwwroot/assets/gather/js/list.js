@@ -83,10 +83,10 @@ var methods = {
   },
 
   btnEditClick: function (rule) {
-    location.href = utils.getPageUrl('gather', 'add', {
+    utils.addTab('编辑：' + rule.ruleName, utils.getPageUrl('gather', 'add', {
       siteId: this.siteId,
       ruleId: rule.id
-    });
+    }));
   },
 
   btnExportClick: function (rule) {

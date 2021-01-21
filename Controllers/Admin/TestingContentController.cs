@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Gather.Abstractions;
 using SSCMS.Dto;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -35,9 +36,11 @@ namespace SSCMS.Gather.Controllers.Admin
             _tableStyleRepository = tableStyleRepository;
         }
 
-        public class GetRequest : SiteRequest
+        public class GetRequest
         {
+            public int SiteId { get; set; }
             public int RuleId { get; set; }
+            public string ListUrl { get; set; }
             public string ContentUrl { get; set; }
         }
 

@@ -1,7 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Gather.Core;
+using SSCMS.Gather.Models;
+using SSCMS.Models;
 using SSCMS.Utils;
 
 namespace SSCMS.Gather.Controllers.Admin
@@ -24,8 +27,13 @@ namespace SSCMS.Gather.Controllers.Admin
             await _ruleRepository.UpdateAsync(rule);
 
             var urls = ListUtils.GetStringList(request.Urls, '\n');
+            var items = urls.Select(x => new Item
+            {
+                Url = x,
+                Content = new Content()
+            }).ToList();
 
-            var guid = _gatherManager.Single(_authManager.AdminId, request.SiteId, request.RuleId, request.ChannelId, urls, null);
+            var guid = _gatherManager.Single(_authManager.AdminId, request.SiteId, request.RuleId, request.ChannelId, items);
 
             return new StringResult
             {

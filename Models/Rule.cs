@@ -34,6 +34,7 @@ namespace SSCMS.Gather.Models
         public string ListAreaEnd { get; set; }
         public string ContentChannelStart { get; set; }
         public string ContentChannelEnd { get; set; }
+        public bool ContentTitleByList { get; set; }
         public string ContentTitleStart { get; set; }
         public string ContentTitleEnd { get; set; }
         public string ContentContentStart { get; set; }

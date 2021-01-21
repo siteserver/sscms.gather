@@ -4,6 +4,7 @@ var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   ruleId: utils.getQueryInt('ruleId'),
   rule: null,
+  listUrl: decodeURIComponent(utils.getQueryString('listUrl')),
   contentUrl: decodeURIComponent(utils.getQueryString('contentUrl')),
   attributes: null
 });
@@ -17,6 +18,7 @@ var methods = {
       params: {
         siteId: this.siteId,
         ruleId: this.ruleId,
+        listUrl: this.listUrl,
         contentUrl: this.contentUrl
       }
     }).then(function (response) {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using SSCMS.Gather.Core;
 using System.Threading.Tasks;
 using SSCMS.Gather.Models;
@@ -17,22 +18,28 @@ namespace SSCMS.Gather.Controllers.Admin
 
             var rule = await _ruleRepository.GetAsync(request.RuleId);
 
-            var regexListArea = GatherUtils.GetRegexArea(rule.ListAreaStart, rule.ListAreaEnd);
+            //var regexListArea = GatherUtils.GetRegexArea(rule.ListAreaStart, rule.ListAreaEnd);
 
-            var regexContentUrl = GatherUtils.GetRegexUrl(rule.ContentUrlStart, rule.ContentUrlEnd);
-            var regexImageUrl = string.Empty;
-            if (rule.ImageSource == ImageSource.List)
-            {
-                regexImageUrl = GatherUtils.GetRegexUrl(rule.ImageUrlStart, rule.ImageUrlEnd);
-            }
+            //var regexContentUrl = GatherUtils.GetRegexUrl(rule.ContentUrlStart, rule.ContentUrlEnd);
+            //var regexImageUrl = string.Empty;
+            //if (rule.ImageSource == ImageSource.List)
+            //{
+            //    regexImageUrl = GatherUtils.GetRegexUrl(rule.ImageUrlStart, rule.ImageUrlEnd);
+            //}
 
-            var urls = GatherUtils.GetContentAndImageUrls(request.GatherUrl, rule.Charset, rule.CookieString, regexListArea, regexContentUrl, regexImageUrl);
-
+            var items = GatherUtils.GetItems(request.GatherUrl, rule);
             return new SubmitResult
             {
-                ContentUrls = urls.contentUrls,
-                ImageUrls = urls.imageUrls
+                Items = items
             };
+
+            //var urls = GatherUtils.GetContentAndImageUrls(request.GatherUrl, rule.Charset, rule.CookieString, regexListArea, regexContentUrl, regexImageUrl);
+
+            //return new SubmitResult
+            //{
+            //    ContentUrls = urls.contentUrls,
+            //    ImageUrls = urls.imageUrls
+            //};
         }
     }
 }

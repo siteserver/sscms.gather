@@ -43,8 +43,7 @@ namespace SSCMS.Gather.Controllers.Admin
 
         public class SubmitResult
         {
-            public List<string> ContentUrls { get; set; }
-            public List<string> ImageUrls { get; set; }
+            public List<Item> Items { get; set; }
         }
     }
 }

@@ -50,6 +50,7 @@ namespace SSCMS.Gather.Controllers.Admin
             rule.ContentUrlEnd = request.ContentUrlEnd;
             rule.ImageUrlStart = request.ImageUrlStart;
             rule.ImageUrlEnd = request.ImageUrlEnd;
+            rule.ContentTitleByList = request.ContentTitleByList;
             rule.ContentTitleStart = request.ContentTitleStart;
             rule.ContentTitleEnd = request.ContentTitleEnd;
             rule.ContentContentStart = request.ContentContentStart;
@@ -73,6 +74,7 @@ namespace SSCMS.Gather.Controllers.Admin
             {
                 foreach (var attribute in request.ContentAttributeList)
                 {
+                    rule.Set($"{attribute}ByList", request.Get<bool>($"{attribute}ByList"));
                     rule.Set($"{attribute}Start", request.Get<string>($"{attribute}Start"));
                     rule.Set($"{attribute}End", request.Get<string>($"{attribute}End"));
                     rule.Set($"{attribute}Default", request.Get<string>($"{attribute}Default"));

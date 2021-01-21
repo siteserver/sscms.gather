@@ -21,6 +21,10 @@ var methods = {
     this.form[ref] = tmpStr.substring(0, startPos) + text + tmpStr.substring(endPos, tmpStr.length);
   },
 
+  getByListName: function(attribute) {
+    return (_.camelCase(attribute.value) + 'ByList');
+  },
+
   getStartName: function(attribute) {
     return (_.camelCase(attribute.value) + 'Start');
   },

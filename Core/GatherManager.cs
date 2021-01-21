@@ -38,7 +38,7 @@ namespace SSCMS.Gather.Core
         public const string PermissionsAdd = "gather_add";
         public const string PermissionsList = "gather_list";
 
-        public ProgressCache InitCache(string guid, string message)
+        private ProgressCache InitCache(string guid, string message)
         {
             if (string.IsNullOrEmpty(guid)) return null;
 
@@ -63,13 +63,12 @@ namespace SSCMS.Gather.Core
             _taskManager.Queue(async _ => { await GatherChannelsAsync(adminId, siteId, ruleId, guid); });
         }
 
-        public string Single(int adminId, int siteId, int ruleId, int channelId, List<string> contentUrls,
-            List<string> imageUrls)
+        public string Single(int adminId, int siteId, int ruleId, int channelId, List<Item> items)
         {
             var guid = StringUtils.Guid();
             _taskManager.Queue(async _ =>
             {
-                await GatherContentsAsync(adminId, siteId, ruleId, channelId, guid, contentUrls, imageUrls);
+                await GatherContentsAsync(adminId, siteId, ruleId, channelId, guid, items);
             });
             return guid;
         }
@@ -90,7 +89,6 @@ namespace SSCMS.Gather.Core
 
             var regexTitleInclude = GatherUtils.GetRegexString(rule.TitleInclude);
             var regexContentExclude = GatherUtils.GetRegexString(rule.ContentExclude);
-            var regexListArea = GatherUtils.GetRegexArea(rule.ListAreaStart, rule.ListAreaEnd);
             var regexChannel = GatherUtils.GetRegexChannel(rule.ContentChannelStart, rule.ContentChannelEnd);
             var regexContent = GatherUtils.GetRegexContent(rule.ContentContentStart, rule.ContentContentEnd);
             var regexContent2 = string.Empty;
@@ -107,28 +105,21 @@ namespace SSCMS.Gather.Core
             var regexTitle = GatherUtils.GetRegexTitle(rule.ContentTitleStart, rule.ContentTitleEnd);
             var contentAttributes = ListUtils.GetStringList(rule.ContentAttributes);
 
-            var (contentUrls, imageUrls) = GatherUtils.GetContentAndImageUrlList(rule, regexListArea, cache);
+            var items = GatherUtils.GetAllItems(rule, cache);
 
-            cache.TotalCount = rule.GatherNum > 0 ? rule.GatherNum : contentUrls.Count;
+            cache.TotalCount = rule.GatherNum > 0 ? rule.GatherNum : items.Count;
             cache.IsSuccess = true;
             cache.Message = "开始采集内容...";
             //if (isCli) await CliUtils.PrintLine(cache.Message);
 
             var channelIdAndContentIdList = new List<KeyValuePair<int, int>>();
 
-            var index = 0;
-            foreach (var contentUrl in contentUrls)
+            foreach (var item in items)
             {
-                var imageUrl = imageUrls != null && imageUrls.Count > index ? imageUrls[index++] : string.Empty;
-
-                var result = await GatherOneAsync(siteInfo, channelInfo, rule.IsSaveImage,
-                    rule.ImageSource, rule.IsSaveFiles, rule.IsEmptyContentAllowed,
-                    rule.IsSameTitleAllowed, rule.IsChecked, rule.Charset, contentUrl, rule.CookieString,
-                    regexTitleInclude, regexContentExclude, rule.ContentHtmlClearCollection,
-                    rule.ContentHtmlClearTagCollection, regexTitle,
-                    imageUrl, regexContent, regexContent2, regexContent3, regexNextPage, regexChannel,
+                var result = await GatherOneAsync(siteInfo, channelInfo,
+                    regexTitleInclude, regexContentExclude, regexTitle, regexContent, regexContent2, regexContent3, regexNextPage, regexChannel,
                     contentAttributes,
-                    rule, channelIdAndContentIdList, adminId);
+                    rule, item, channelIdAndContentIdList, adminId);
                 if (result.Success)
                 {
                     cache.SuccessCount++;
@@ -166,7 +157,7 @@ namespace SSCMS.Gather.Core
             //if (isCli) await CliUtils.PrintLine(cache.Message);
         }
 
-        public async Task GatherContentsAsync(int adminId, int siteId, int ruleId, int channelId, string guid, List<string> contentUrls, List<string> imageUrls)
+        private async Task GatherContentsAsync(int adminId, int siteId, int ruleId, int channelId, string guid, List<Item> items)
         {
             var cache = InitCache(guid, "开始获取链接...");
 
@@ -192,24 +183,18 @@ namespace SSCMS.Gather.Core
             var regexTitle = GatherUtils.GetRegexTitle(rule.ContentTitleStart, rule.ContentTitleEnd);
             var contentAttributes = ListUtils.GetStringList(rule.ContentAttributes);
 
-            cache.TotalCount = rule.GatherNum > 0 ? rule.GatherNum : contentUrls.Count;
+            cache.TotalCount = rule.GatherNum > 0 ? rule.GatherNum : items.Count;
             cache.IsSuccess = true;
             cache.Message = "开始采集内容...";
 
             var channelIdAndContentIdList = new List<KeyValuePair<int, int>>();
 
-            var index = 0;
-            foreach (var contentUrl in contentUrls)
+            foreach (var item in items)
             {
-                var imageUrl = imageUrls != null && imageUrls.Count > index ? imageUrls[index++] : string.Empty;
-
-                var result = await GatherOneAsync(siteInfo, channelInfo, rule.IsSaveImage,
-                    rule.ImageSource, rule.IsSaveFiles, rule.IsEmptyContentAllowed,
-                    rule.IsSameTitleAllowed, rule.IsChecked, rule.Charset, contentUrl, rule.CookieString,
-                    regexTitleInclude, regexContentExclude, rule.ContentHtmlClearCollection,
-                    rule.ContentHtmlClearTagCollection, regexTitle, imageUrl,
+                var result = await GatherOneAsync(siteInfo, channelInfo,
+                    regexTitleInclude, regexContentExclude, regexTitle,
                     regexContent, regexContent2, regexContent3, regexNextPage, regexChannel, contentAttributes,
-                    rule, channelIdAndContentIdList, adminId);
+                    rule, item, channelIdAndContentIdList, adminId);
                 if (result.Success)
                 {
                     cache.SuccessCount++;
@@ -244,7 +229,7 @@ namespace SSCMS.Gather.Core
             cache.Message = $"任务完成，共采集内容 {cache.SuccessCount} 篇。";
         }
 
-        private async Task<(bool Success, string Title, string ErrorMessage)> GatherOneAsync(Site siteInfo, Channel channelInfo, bool isSaveImage, ImageSource imageSource, bool isSaveFiles, bool isEmptyContentAllowed, bool isSameTitleAllowed, bool isChecked, Charset charset, string url, string cookieString, string regexTitleInclude, string regexContentExclude, string contentHtmlClearCollection, string contentHtmlClearTagCollection, string regexTitle, string imageUrl, string regexContent, string regexContent2, string regexContent3, string regexNextPage, string regexChannel, IEnumerable<string> contentAttributes, Rule rule, ICollection<KeyValuePair<int, int>> channelIdAndContentIdList, int adminId)
+        private async Task<(bool Success, string Title, string ErrorMessage)> GatherOneAsync(Site siteInfo, Channel channelInfo, string regexTitleInclude, string regexContentExclude, string regexTitle, string regexContent, string regexContent2, string regexContent3, string regexNextPage, string regexChannel, IEnumerable<string> contentAttributes, Rule rule, Item item, ICollection<KeyValuePair<int, int>> channelIdAndContentIdList, int adminId)
         {
             try
             {
@@ -257,31 +242,31 @@ namespace SSCMS.Gather.Core
 
                 //    }
                 //}
-                if (!WebClientUtils.GetRemoteHtml(url, charset, cookieString, out var html, out var errorMessage))
+                if (!WebClientUtils.GetRemoteHtml(item.Url, rule.Charset, rule.CookieString, out var contentHtml, out var errorMessage))
                 {
                     return (false, string.Empty, errorMessage);
                 }
 
-                var title = GatherUtils.GetValue("title", regexTitle, html);
-                var content = GatherUtils.GetValue("content", regexContent, html);
+                var title = rule.ContentTitleByList ? item.Content.Title : GatherUtils.GetValue("title", regexTitle, contentHtml);
+                var content = GatherUtils.GetValue("content", regexContent, contentHtml);
                 if (string.IsNullOrEmpty(content) && !string.IsNullOrEmpty(regexContent2))
                 {
-                    content = GatherUtils.GetValue("content", regexContent2, html);
+                    content = GatherUtils.GetValue("content", regexContent2, contentHtml);
                 }
                 if (string.IsNullOrEmpty(content) && !string.IsNullOrEmpty(regexContent3))
                 {
-                    content = GatherUtils.GetValue("content", regexContent3, html);
+                    content = GatherUtils.GetValue("content", regexContent3, contentHtml);
                 }
 
                 //如果标题或内容为空，返回false并退出
                 if (string.IsNullOrEmpty(title))
                 {
-                    errorMessage = $"无法获取标题：{url}";
+                    errorMessage = $"无法获取标题：{item.Url}";
                     return (false, title, errorMessage);
                 }
-                if (isEmptyContentAllowed == false && string.IsNullOrEmpty(content))
+                if (rule.IsEmptyContentAllowed == false && string.IsNullOrEmpty(content))
                 {
-                    errorMessage = $"无法获取内容正文：{url}";
+                    errorMessage = $"无法获取内容正文：{item.Url}";
                     return (false, title, errorMessage);
                 }
 
@@ -291,7 +276,7 @@ namespace SSCMS.Gather.Core
                 {
                     if (GatherUtils.IsMatch(regexTitleInclude, title) == false)
                     {
-                        errorMessage = $"标题不符合要求：{url}";
+                        errorMessage = $"标题不符合要求：{item.Url}";
                         return (false, title, errorMessage);
                     }
                 }
@@ -299,18 +284,18 @@ namespace SSCMS.Gather.Core
                 {
                     content = GatherUtils.Replace(regexContentExclude, content, string.Empty);
                 }
-                if (!string.IsNullOrEmpty(contentHtmlClearCollection))
+                if (!string.IsNullOrEmpty(rule.ContentHtmlClearCollection))
                 {
-                    var htmlClearList = GatherUtils.StringCollectionToList(contentHtmlClearCollection);
+                    var htmlClearList = GatherUtils.StringCollectionToList(rule.ContentHtmlClearCollection);
                     foreach (var htmlClear in htmlClearList)
                     {
                         var clearRegex = $@"<{htmlClear}[^>]*>.*?<\/{htmlClear}>";
                         content = GatherUtils.Replace(clearRegex, content, string.Empty);
                     }
                 }
-                if (!string.IsNullOrEmpty(contentHtmlClearTagCollection))
+                if (!string.IsNullOrEmpty(rule.ContentHtmlClearTagCollection))
                 {
-                    var htmlClearTagList = GatherUtils.StringCollectionToList(contentHtmlClearTagCollection);
+                    var htmlClearTagList = GatherUtils.StringCollectionToList(rule.ContentHtmlClearTagCollection);
                     foreach (var htmlClearTag in htmlClearTagList)
                     {
                         var clearRegex = $@"<{htmlClearTag}[^>]*>";
@@ -320,12 +305,12 @@ namespace SSCMS.Gather.Core
                     }
                 }
 
-                var contentNextPageUrl = GatherUtils.GetUrl(regexNextPage, html, url);
+                var contentNextPageUrl = GatherUtils.GetUrl(regexNextPage, contentHtml, item.Url);
                 if (!string.IsNullOrEmpty(contentNextPageUrl))
                 {
                     try
                     {
-                        content = GatherUtils.GetPageContent(content, charset, contentNextPageUrl, cookieString, regexContentExclude, contentHtmlClearCollection, contentHtmlClearTagCollection, regexContent, regexContent2, regexContent3, regexNextPage);
+                        content = GatherUtils.GetPageContent(content, rule.Charset, contentNextPageUrl, rule.CookieString, regexContentExclude, rule.ContentHtmlClearCollection, rule.ContentHtmlClearTagCollection, regexContent, regexContent2, regexContent3, regexNextPage);
                     }
                     catch (Exception ex)
                     {
@@ -334,7 +319,7 @@ namespace SSCMS.Gather.Core
                     }
                 }
 
-                var channel = GatherUtils.GetValue("channel", regexChannel, html);
+                var channel = GatherUtils.GetValue("channel", regexChannel, contentHtml);
                 var channelId = channelInfo.Id;
                 if (!string.IsNullOrEmpty(channel))
                 {
@@ -368,7 +353,7 @@ namespace SSCMS.Gather.Core
                     }
                 }
 
-                if (!isSameTitleAllowed)
+                if (!rule.IsSameTitleAllowed)
                 {
                     var theChannel = await _channelRepository.GetAsync(channelId);
                     var contentIds = await _contentRepository.GetContentIdsBySameTitleAsync(siteInfo, theChannel, title);
@@ -388,6 +373,7 @@ namespace SSCMS.Gather.Core
                 {
                     if (!StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.Title)) && !StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.Body)))
                     {
+                        var normalByList = GatherUtils.GetByListValue(rule, attributeName);
                         var normalStart = GatherUtils.GetStartValue(rule, attributeName);
                         var normalEnd = GatherUtils.GetEndValue(rule, attributeName);
 
@@ -395,7 +381,7 @@ namespace SSCMS.Gather.Core
                         var normalDefault = GatherUtils.GetDefaultValue(rule, attributeName);
 
                         var regex = GatherUtils.GetRegexAttributeName(attributeName, normalStart, normalEnd);
-                        var value = GatherUtils.GetValue(attributeName, regex, html);
+                        var value = normalByList ? item.Content.Get<string>(attributeName) : GatherUtils.GetValue(attributeName, regex,  contentHtml);
 
                         //采集为空时的默认值
                         if (string.IsNullOrEmpty(value))
@@ -405,7 +391,7 @@ namespace SSCMS.Gather.Core
 
                         if (StringUtils.EqualsIgnoreCase(nameof(Content.AddDate), attributeName))
                         {
-                            value = StringUtils.ReplaceFirst("：", value, ":");
+                            value = GatherUtils.ReplaceFirst(value, "：", ":");
                             contentInfo.AddDate = TranslateUtils.ToDateTime(value, DateTime.Now);
                         }
                         else if (StringUtils.EqualsIgnoreCase(nameof(Content.Color), attributeName))
@@ -428,7 +414,7 @@ namespace SSCMS.Gather.Core
                         {
                             if (!string.IsNullOrEmpty(value))
                             {
-                                var attachmentUrl = GatherUtils.GetUrlByBaseUrl(value, url);
+                                var attachmentUrl = GatherUtils.GetUrlByBaseUrl(value, item.Url);
 
                                 var fileExtension = PageUtils.GetExtensionFromUrl(attachmentUrl);
                                 var fileName =
@@ -453,7 +439,7 @@ namespace SSCMS.Gather.Core
                         {
                             if (!string.IsNullOrEmpty(value))
                             {
-                                var attachmentUrl = GatherUtils.GetUrlByBaseUrl(value, url);
+                                var attachmentUrl = GatherUtils.GetUrlByBaseUrl(value, item.Url);
                                 var fileExtension = PageUtils.GetExtensionFromUrl(attachmentUrl);
                                 var fileName = $"{StringUtils.GetShortGuid(false)}{fileExtension}";
 
@@ -475,7 +461,7 @@ namespace SSCMS.Gather.Core
                         {
                             if (!string.IsNullOrEmpty(value))
                             {
-                                var attachmentUrl = GatherUtils.GetUrlByBaseUrl(value, url);
+                                var attachmentUrl = GatherUtils.GetUrlByBaseUrl(value, item.Url);
                                 var fileExtension = PageUtils.GetExtensionFromUrl(attachmentUrl);
                                 var fileName = $"{StringUtils.GetShortGuid(false)}{fileExtension}";
 
@@ -505,10 +491,10 @@ namespace SSCMS.Gather.Core
                 }
 
                 var firstImageUrl = string.Empty;
-                if (isSaveImage)
+                if (rule.IsSaveImage)
                 {
                     var originalImageSrcList = GatherUtils.GetOriginalImageSrcList(content);
-                    var imageSrcList = GatherUtils.GetImageSrcList(url, content);
+                    var imageSrcList = GatherUtils.GetImageSrcList(item.Url, content);
                     if (originalImageSrcList.Count == imageSrcList.Count)
                     {
                         for (var i = 0; i < originalImageSrcList.Count; i++)
@@ -540,11 +526,11 @@ namespace SSCMS.Gather.Core
                     }
                 }
 
-                if (imageSource == ImageSource.Content)
+                if (rule.ImageSource == ImageSource.Content)
                 {
                     if (string.IsNullOrEmpty(firstImageUrl))
                     {
-                        var imageSrcList = GatherUtils.GetImageSrcList(url, content);
+                        var imageSrcList = GatherUtils.GetImageSrcList(item.Url, content);
                         if (imageSrcList.Count > 0)
                         {
                             firstImageUrl = imageSrcList[index: 0];
@@ -556,15 +542,15 @@ namespace SSCMS.Gather.Core
                         contentInfo.ImageUrl = firstImageUrl;
                     }
                 }
-                else if (imageSource == ImageSource.List)
+                else if (rule.ImageSource == ImageSource.List)
                 {
-                    contentInfo.ImageUrl = imageUrl;
+                    contentInfo.ImageUrl = item.Content.ImageUrl;
                 }
 
-                if (isSaveFiles)
+                if (rule.IsSaveFiles)
                 {
                     var originalLinkHrefList = GatherUtils.GetOriginalLinkHrefList(content);
-                    var linkHrefList = GatherUtils.GetLinkHrefList(url, content);
+                    var linkHrefList = GatherUtils.GetLinkHrefList(item.Url, content);
                     if (originalLinkHrefList.Count == linkHrefList.Count)
                     {
                         for (var i = 0; i < originalLinkHrefList.Count; i++)
@@ -597,7 +583,7 @@ namespace SSCMS.Gather.Core
                 contentInfo.ChannelId = channelId;
                 contentInfo.AdminId = adminId;
                 contentInfo.LastEditAdminId = adminId;
-                contentInfo.Checked = isChecked;
+                contentInfo.Checked = rule.IsChecked;
                 contentInfo.CheckedLevel = 0;
                 contentInfo.Title = title;
                 contentInfo.Body = content;

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Gather.Core;
@@ -17,25 +18,10 @@ namespace SSCMS.Gather.Controllers.Admin
             }
 
             var rule = await _ruleRepository.GetAsync(request.RuleId);
+            var items = GatherUtils.GetItems(request.ListUrl, rule);
+            var item = items.FirstOrDefault(x => StringUtils.EqualsIgnoreCase(x.Url, request.ContentUrl));
 
-            var regexContentExclude = GatherUtils.GetRegexString(rule.ContentExclude);
-            var regexChannel = GatherUtils.GetRegexChannel(rule.ContentChannelStart, rule.ContentChannelEnd);
-            var regexContent = GatherUtils.GetRegexContent(rule.ContentContentStart, rule.ContentContentEnd);
-            var regexContent2 = string.Empty;
-            if (!string.IsNullOrEmpty(rule.ContentContentStart2) && !string.IsNullOrEmpty(rule.ContentContentEnd2))
-            {
-                regexContent2 = GatherUtils.GetRegexContent(rule.ContentContentStart2, rule.ContentContentEnd2);
-            }
-            var regexContent3 = string.Empty;
-            if (!string.IsNullOrEmpty(rule.ContentContentStart3) && !string.IsNullOrEmpty(rule.ContentContentEnd3))
-            {
-                regexContent3 = GatherUtils.GetRegexContent(rule.ContentContentStart3, rule.ContentContentEnd3);
-            }
-            var regexNextPage = GatherUtils.GetRegexUrl(rule.ContentNextPageStart, rule.ContentNextPageEnd);
-            var regexTitle = GatherUtils.GetRegexTitle(rule.ContentTitleStart, rule.ContentTitleEnd);
-            var contentAttributes = ListUtils.GetStringList(rule.ContentAttributes);
-
-            var attributes = GatherUtils.GetContentNameValueCollection(rule.Charset, request.ContentUrl, rule.CookieString, regexContentExclude, rule.ContentHtmlClearCollection, rule.ContentHtmlClearTagCollection, regexTitle, regexContent, regexContent2, regexContent3, regexNextPage, regexChannel, contentAttributes, rule);
+            var attributes = GatherUtils.GetContentNameValueCollection(rule, item);
 
             var list = new List<KeyValuePair<string, string>>();
 
