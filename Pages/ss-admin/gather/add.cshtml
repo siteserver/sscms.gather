@@ -207,24 +207,34 @@
     <el-checkbox v-for="attribute in attributes" :key="attribute.value" v-model="attribute.selected" :label="attribute.value">{{ attribute.label }}</el-checkbox>
   </el-form-item>
   <template v-for="attribute in attributes" v-if="attribute.selected">
-    <el-form-item :label="attribute.label + '（必填）'" :prop="getByListName(attribute)" :rules="{ required: true, message: '请选择' + attribute.label }">
-      <el-radio-group :id="getByListName(attribute)" v-model="form[getByListName(attribute)]">
-        <el-radio :label="false">从详情页获取</el-radio>
-        <el-radio :label="true">从列表页获取</el-radio>
-      </el-radio-group>
-    </el-form-item>
-    <el-form-item :label="attribute.label + '开始（必填）'" :prop="getStartName(attribute)" :rules="{ required: true, message: '请输入' + attribute.label + '开始' }">
-      <el-input type="textarea" :rows="5" :id="getStartName(attribute)" v-model="form[getStartName(attribute)]"></el-input>
-      <div class="tips">遇到变动字符请<el-link :underline="false" type="primary" v-on:click="insert(getStartName(attribute), '*')">插入 * 通配符</el-link>，多个条件请<el-link :underline="false" type="primary" v-on:click="insert(getStartName(attribute), '|')">插入 | 通配符</el-link></div>
-    </el-form-item>
-    <el-form-item :label="attribute.label + '结束（必填）'" :prop="getEndName(attribute)" :rules="{ required: true, message: '请输入' + attribute.label + '结束' }">
-      <el-input type="textarea" :rows="5" :id="getEndName(attribute)" v-model="form[getEndName(attribute)]"></el-input>
-      <div class="tips">遇到变动字符请<el-link :underline="false" type="primary" v-on:click="insert(getEndName(attribute), '*')">插入 * 通配符</el-link>，多个条件请<el-link :underline="false" type="primary" v-on:click="insert(getEndName(attribute), '|')">插入 | 通配符</el-link></div>
-    </el-form-item>
-    <el-form-item :label="attribute.label + '默认值（选填）'">
-      <el-input v-model="form[getDefaultName(attribute)]"></el-input>
-      <div class="tips">无匹配项时字段的默认值</div>
-    </el-form-item>
+    <template v-if="attribute.selected && attribute.value === 'FileName'">
+      <el-form-item label="原页面文件名保存至" prop="fileNameAttributeName" :rules="{ required: true, message: '请选择原页面文件名保存字段' }">
+        <el-select v-model="form.fileNameAttributeName" style="width: 200px" placeholder="请选择字段">
+          <el-option v-for="style in styles" :label="style.displayName" :value="style.attributeName"></el-option>
+        </el-select>
+        <div class="tips">系统将把原页面文件名保存至所选择的字段中</div>
+      </el-form-item>
+    </template>
+    <template v-else>
+      <el-form-item :label="attribute.label + '（必填）'" :prop="getByListName(attribute)" :rules="{ required: true, message: '请选择' + attribute.label }">
+        <el-radio-group :id="getByListName(attribute)" v-model="form[getByListName(attribute)]">
+          <el-radio :label="false">从详情页获取</el-radio>
+          <el-radio :label="true">从列表页获取</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item :label="attribute.label + '开始（必填）'" :prop="getStartName(attribute)" :rules="{ required: true, message: '请输入' + attribute.label + '开始' }">
+        <el-input type="textarea" :rows="5" :id="getStartName(attribute)" v-model="form[getStartName(attribute)]"></el-input>
+        <div class="tips">遇到变动字符请<el-link :underline="false" type="primary" v-on:click="insert(getStartName(attribute), '*')">插入 * 通配符</el-link>，多个条件请<el-link :underline="false" type="primary" v-on:click="insert(getStartName(attribute), '|')">插入 | 通配符</el-link></div>
+      </el-form-item>
+      <el-form-item :label="attribute.label + '结束（必填）'" :prop="getEndName(attribute)" :rules="{ required: true, message: '请输入' + attribute.label + '结束' }">
+        <el-input type="textarea" :rows="5" :id="getEndName(attribute)" v-model="form[getEndName(attribute)]"></el-input>
+        <div class="tips">遇到变动字符请<el-link :underline="false" type="primary" v-on:click="insert(getEndName(attribute), '*')">插入 * 通配符</el-link>，多个条件请<el-link :underline="false" type="primary" v-on:click="insert(getEndName(attribute), '|')">插入 | 通配符</el-link></div>
+      </el-form-item>
+      <el-form-item :label="attribute.label + '默认值（选填）'">
+        <el-input v-model="form[getDefaultName(attribute)]"></el-input>
+        <div class="tips">无匹配项时字段的默认值</div>
+      </el-form-item>
+    </template>
   </template>
 
 </el-form>

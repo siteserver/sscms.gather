@@ -72,9 +72,17 @@ namespace SSCMS.Gather.Controllers.Admin
             }
             attributes.Add(hitsOption);
 
+            var fileNameOption = new Option<string>("FileName", "原页面文件名");
+            if (ListUtils.ContainsIgnoreCase(selectedAttributes, fileNameOption.Value))
+            {
+                fileNameOption.Selected = true;
+            }
+            attributes.Add(fileNameOption);
+
             return new AttributesResult
             {
-                Attributes = attributes
+                Attributes = attributes,
+                Styles = styles
             };
         }
     }

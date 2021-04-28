@@ -8,6 +8,7 @@ var data = utils.init({
   channels: null,
   charsetList: null,
   attributes: null,
+  styles: [],
   form: null,
   step: 0
 });
@@ -84,6 +85,7 @@ var methods = {
       var res = response.data;
 
       $this.attributes = res.attributes;
+      $this.styles = res.styles;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -131,7 +133,7 @@ var methods = {
           $this.apiSubmit();
           return;
         }
-        
+
         if ($this.step === 1) {
           if ($this.form.gatherUrlIsSerialize && $this.form.gatherUrlSerialize.indexOf('*') === -1) {
             utils.error('序列相似网址必须包含 * 通配符');

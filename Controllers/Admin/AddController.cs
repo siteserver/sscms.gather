@@ -8,6 +8,7 @@ using SSCMS.Dto;
 using SSCMS.Gather.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
+using SSCMS.Models;
 
 namespace SSCMS.Gather.Controllers.Admin
 {
@@ -59,6 +60,7 @@ namespace SSCMS.Gather.Controllers.Admin
         public class AttributesResult
         {
             public List<Option<string>> Attributes { get; set; }
+            public List<TableStyle> Styles { get; set; }
         }
 
         public class SubmitRequest : Entity
@@ -108,6 +110,7 @@ namespace SSCMS.Gather.Controllers.Admin
             public List<string> ContentHtmlClearTagList { get; set; }
             public List<string> ContentAttributeList { get; set; }
             public Dictionary<string, string> ContentAttributesDict { get; set; }
+            public string FileNameAttributeName { get; set; }
         }
     }
 }

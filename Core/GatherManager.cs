@@ -233,15 +233,6 @@ namespace SSCMS.Gather.Core
         {
             try
             {
-                //TODO:采集文件、链接标题为内容标题、链接提示为内容标题
-                //string extension = PathUtils.GetExtension(url);
-                //if (!EFileSystemTypeUtils.IsTextEditable(extension))
-                //{
-                //    if (EFileSystemTypeUtils.IsImageOrFlashOrPlayer(extension))
-                //    {
-
-                //    }
-                //}
                 if (!WebClientUtils.GetRemoteHtml(item.Url, rule.Charset, rule.CookieString, out var contentHtml, out var errorMessage))
                 {
                     return (false, string.Empty, errorMessage);
@@ -381,7 +372,7 @@ namespace SSCMS.Gather.Core
                         var normalDefault = GatherUtils.GetDefaultValue(rule, attributeName);
 
                         var regex = GatherUtils.GetRegexAttributeName(attributeName, normalStart, normalEnd);
-                        var value = normalByList ? item.Content.Get<string>(attributeName) : GatherUtils.GetValue(attributeName, regex,  contentHtml);
+                        var value = normalByList ? item.Content.Get<string>(attributeName) : GatherUtils.GetValue(attributeName, regex, contentHtml);
 
                         //采集为空时的默认值
                         if (string.IsNullOrEmpty(value))
@@ -482,6 +473,11 @@ namespace SSCMS.Gather.Core
                         else if (StringUtils.EqualsIgnoreCase(nameof(Content.Hits), attributeName))
                         {
                             contentInfo.Hits = TranslateUtils.ToInt(value);
+                        }
+                        else if (StringUtils.EqualsIgnoreCase("FileName", attributeName) && !string.IsNullOrEmpty(rule.FileNameAttributeName))
+                        {
+                            var fileName = PathUtils.GetFileNameWithoutExtension(item.Url);
+                            contentInfo.Set(rule.FileNameAttributeName, fileName);
                         }
                         else
                         {

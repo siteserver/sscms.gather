@@ -16,9 +16,9 @@ namespace SSCMS.Gather.Models
         public bool GatherUrlIsSerialize { get; set; }
         public string GatherUrlSerialize { get; set; }
         public int SerializeFrom { get; set; }
-        public int SerializeTo { get; set; } 
-        public int SerializeInterval { get; set; } 
-        public bool SerializeIsOrderByDesc { get; set; } 
+        public int SerializeTo { get; set; }
+        public int SerializeInterval { get; set; }
+        public bool SerializeIsOrderByDesc { get; set; }
         public bool SerializeIsAddZero { get; set; }
         public int ChannelId { get; set; }
         public Charset Charset { get; set; }
@@ -55,5 +55,6 @@ namespace SSCMS.Gather.Models
         public string ContentContentEnd2 { get; set; }
         public string ContentContentStart3 { get; set; }
         public string ContentContentEnd3 { get; set; }
+        public string FileNameAttributeName { get; set; }
     }
 }

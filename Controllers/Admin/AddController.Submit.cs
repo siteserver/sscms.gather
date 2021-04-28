@@ -68,6 +68,7 @@ namespace SSCMS.Gather.Controllers.Admin
             rule.ContentExclude = request.ContentExclude;
             rule.ContentHtmlClearCollection = ListUtils.ToString(request.ContentHtmlClearList);
             rule.ContentHtmlClearTagCollection = ListUtils.ToString(request.ContentHtmlClearTagList);
+            rule.FileNameAttributeName = request.FileNameAttributeName;
 
             rule.ContentAttributes = ListUtils.ToString(request.ContentAttributeList);
             if (request.ContentAttributeList != null)

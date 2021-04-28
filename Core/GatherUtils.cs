@@ -93,7 +93,7 @@ namespace SSCMS.Gather.Core
 
             var urlWithoutFileName = string.Empty;
             var schema = "";
-            if (rawUrl.ToLower().StartsWith("://"))
+            if (rawUrl.ToLower().Contains("://"))
             {
                 schema = rawUrl.ToLower().Substring(0, length: rawUrl.ToLower().IndexOf("://", StringComparison.Ordinal) + 3);
                 urlWithoutFileName = rawUrl.Substring(schema.Length);
@@ -605,12 +605,7 @@ namespace SSCMS.Gather.Core
             {
                 body = GetPageContent(body, rule.Charset, contentNextPageUrl, rule.CookieString, regexContentExclude, rule.ContentHtmlClearCollection, rule.ContentHtmlClearTagCollection, regexContent, regexContent2, regexContent3, regexNextPage);
             }
-
             var channel = GetValue("channel", regexChannel, contentHtml);
-
-            attributes.Add("Title", title);
-            attributes.Add("Channel", channel);
-            attributes.Add("Content", body);
 
             foreach (var attributeName in contentAttributes)
             {
@@ -626,6 +621,10 @@ namespace SSCMS.Gather.Core
                 }
                 attributes.Set(attributeName, value);
             }
+
+            attributes.Add("标题", title);
+            attributes.Add("栏目", channel);
+            attributes.Add("正文", body);
 
             return attributes;
         }
