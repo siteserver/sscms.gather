@@ -207,6 +207,7 @@
     <el-checkbox v-for="attribute in attributes" :key="attribute.value" v-model="attribute.selected" :label="attribute.value">{{ attribute.label }}</el-checkbox>
   </el-form-item>
   <template v-for="attribute in attributes" v-if="attribute.selected">
+    <el-divider></el-divider>
     <template v-if="attribute.selected && attribute.value === 'FileName'">
       <el-form-item label="原页面文件名保存至" prop="fileNameAttributeName" :rules="{ required: true, message: '请选择原页面文件名保存字段' }">
         <el-select v-model="form.fileNameAttributeName" style="width: 200px" placeholder="请选择字段">
