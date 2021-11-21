@@ -105,7 +105,7 @@ namespace SSCMS.Gather.Core
             var regexTitle = GatherUtils.GetRegexTitle(rule.ContentTitleStart, rule.ContentTitleEnd);
             var contentAttributes = ListUtils.GetStringList(rule.ContentAttributes);
 
-            var items = GatherUtils.GetAllItems(rule, cache);
+            var items = await GatherUtils.GetAllItemsAsync(rule, cache);
 
             cache.TotalCount = rule.GatherNum > 0 ? rule.GatherNum : items.Count;
             cache.IsSuccess = true;
@@ -233,10 +233,13 @@ namespace SSCMS.Gather.Core
         {
             try
             {
-                if (!WebClientUtils.GetRemoteHtml(item.Url, rule.Charset, rule.CookieString, out var contentHtml, out var errorMessage))
+                var result = await WebClientUtils.GetRemoteHtmlAsync(item.Url, rule.Charset, rule.CookieString);
+                if (!result.IsSuccess)
                 {
-                    return (false, string.Empty, errorMessage);
+                    return (false, string.Empty, result.ErrorMessage);
                 }
+                var contentHtml = result.Content;
+                var errorMessage = string.Empty;
 
                 var title = rule.ContentTitleByList ? item.Content.Title : GatherUtils.GetValue("title", regexTitle, contentHtml);
                 var content = GatherUtils.GetValue("content", regexContent, contentHtml);
@@ -301,7 +304,7 @@ namespace SSCMS.Gather.Core
                 {
                     try
                     {
-                        content = GatherUtils.GetPageContent(content, rule.Charset, contentNextPageUrl, rule.CookieString, regexContentExclude, rule.ContentHtmlClearCollection, rule.ContentHtmlClearTagCollection, regexContent, regexContent2, regexContent3, regexNextPage);
+                        content = await GatherUtils.GetPageContentAsync(content, rule.Charset, contentNextPageUrl, rule.CookieString, regexContentExclude, rule.ContentHtmlClearCollection, rule.ContentHtmlClearTagCollection, regexContent, regexContent2, regexContent3, regexNextPage);
                     }
                     catch (Exception ex)
                     {
@@ -416,7 +419,7 @@ namespace SSCMS.Gather.Core
                                 DirectoryUtils.CreateDirectoryIfNotExists(filePath);
                                 try
                                 {
-                                    WebClientUtils.SaveRemoteFileToLocal(attachmentUrl, filePath);
+                                    await WebClientUtils.DownloadAsync(attachmentUrl, filePath);
                                     contentInfo.ImageUrl =
                                         await _pathManager.GetVirtualUrlByPhysicalPathAsync(siteInfo, filePath);
                                 }
@@ -439,7 +442,7 @@ namespace SSCMS.Gather.Core
                                 DirectoryUtils.CreateDirectoryIfNotExists(filePath);
                                 try
                                 {
-                                    WebClientUtils.SaveRemoteFileToLocal(attachmentUrl, filePath);
+                                    await WebClientUtils.DownloadAsync(attachmentUrl, filePath);
                                     contentInfo.VideoUrl = await _pathManager.GetVirtualUrlByPhysicalPathAsync(siteInfo, filePath);
                                 }
                                 catch
@@ -461,7 +464,7 @@ namespace SSCMS.Gather.Core
                                 DirectoryUtils.CreateDirectoryIfNotExists(filePath);
                                 try
                                 {
-                                    WebClientUtils.SaveRemoteFileToLocal(attachmentUrl, filePath);
+                                    await WebClientUtils.DownloadAsync(attachmentUrl, filePath);
                                     contentInfo.FileUrl = await _pathManager.GetVirtualUrlByPhysicalPathAsync(siteInfo, filePath);
                                 }
                                 catch
@@ -506,7 +509,7 @@ namespace SSCMS.Gather.Core
                             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
                             try
                             {
-                                WebClientUtils.SaveRemoteFileToLocal(imageSrc, filePath);
+                                await WebClientUtils.DownloadAsync(imageSrc, filePath);
                                 var fileUrl = await _pathManager.GetVirtualUrlByPhysicalPathAsync(siteInfo, filePath);
                                 content = content.Replace(originalImageSrc, fileUrl);
                                 if (firstImageUrl == string.Empty)
@@ -562,7 +565,7 @@ namespace SSCMS.Gather.Core
                             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
                             try
                             {
-                                WebClientUtils.SaveRemoteFileToLocal(linkHref, filePath);
+                                await WebClientUtils.DownloadAsync(linkHref, filePath);
                                 var fileUrl = await _pathManager.GetVirtualUrlByPhysicalPathAsync(siteInfo, filePath);
                                 content = content.Replace(originalLinkHref, fileUrl);
                             }

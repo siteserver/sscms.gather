@@ -27,7 +27,7 @@ namespace SSCMS.Gather.Controllers.Admin
             //    regexImageUrl = GatherUtils.GetRegexUrl(rule.ImageUrlStart, rule.ImageUrlEnd);
             //}
 
-            var items = GatherUtils.GetItems(request.GatherUrl, rule);
+            var items = await GatherUtils.GetItemsAsync(request.GatherUrl, rule);
             return new SubmitResult
             {
                 Items = items

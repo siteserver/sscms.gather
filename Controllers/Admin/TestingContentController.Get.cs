@@ -18,10 +18,10 @@ namespace SSCMS.Gather.Controllers.Admin
             }
 
             var rule = await _ruleRepository.GetAsync(request.RuleId);
-            var items = GatherUtils.GetItems(request.ListUrl, rule);
+            var items = await GatherUtils.GetItemsAsync(request.ListUrl, rule);
             var item = items.FirstOrDefault(x => StringUtils.EqualsIgnoreCase(x.Url, request.ContentUrl));
 
-            var attributes = GatherUtils.GetContentNameValueCollection(rule, item);
+            var attributes = await GatherUtils.GetContentNameValueCollectionAsync(rule, item);
 
             var list = new List<KeyValuePair<string, string>>();
 

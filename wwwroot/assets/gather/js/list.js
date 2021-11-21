@@ -1,6 +1,7 @@
 var $url = '/gather/list';
-var $urlExport = '/gather/list/actions/export';
-var $urlImport = '/gather/list/actions/import';
+var $urlExport = $url + '/actions/export';
+var $urlImport = $url + '/actions/import';
+var $urlDelete = $url + '/actions/delete';
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
@@ -32,11 +33,9 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: {
-        siteId: $this.siteId,
-        ruleId: rule.id
-      }
+    $api.post($urlDelete, {
+      siteId: $this.siteId,
+      ruleId: rule.id
     }).then(function (response) {
       var res = response.data;
 

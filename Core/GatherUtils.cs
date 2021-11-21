@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using SSCMS.Gather.Models;
 using SSCMS.Models;
 using SSCMS.Utils;
@@ -367,7 +368,7 @@ namespace SSCMS.Gather.Core
             return gatherUrls;
         }
 
-        public static List<Item> GetAllItems(Rule rule, ProgressCache cache)
+        public static async Task<List<Item>> GetAllItemsAsync(Rule rule, ProgressCache cache)
         {
             var gatherUrls = GetGatherUrlList(rule);
             var allItems = new List<Item>();
@@ -379,7 +380,7 @@ namespace SSCMS.Gather.Core
 
                 try
                 {
-                    var items = GetItems(gatherUrl, rule);
+                    var items = await GetItemsAsync(gatherUrl, rule);
                     allItems.AddRange(items);
                 }
                 catch (Exception ex)
@@ -397,12 +398,15 @@ namespace SSCMS.Gather.Core
             return allItems;
         }
 
-        public static List<Item> GetItems(string gatherUrl, Rule rule)
+        public static async Task<List<Item>> GetItemsAsync(string gatherUrl, Rule rule)
         {
-            if (!WebClientUtils.GetRemoteHtml(gatherUrl, rule.Charset, rule.CookieString, out var pageHtml, out var errorMessage))
+            var result = await WebClientUtils.GetRemoteHtmlAsync(gatherUrl, rule.Charset, rule.CookieString);
+            if (!result.IsSuccess)
             {
-                throw new Exception(errorMessage);
+                throw new Exception(result.ErrorMessage);
             }
+
+            var pageHtml = result.Content;
             var areaHtml = string.Empty;
             var regexListArea = GetRegexArea(rule.ListAreaStart, rule.ListAreaEnd);
             if (!string.IsNullOrEmpty(regexListArea))
@@ -538,15 +542,17 @@ namespace SSCMS.Gather.Core
             return items;
         }
 
-        public static NameValueCollection GetContentNameValueCollection(Rule rule, Item item)
+        public static async Task<NameValueCollection> GetContentNameValueCollectionAsync(Rule rule, Item item)
         {
             var attributes = new NameValueCollection();
 
-            if (!WebClientUtils.GetRemoteHtml(item.Url, rule.Charset, rule.CookieString, out var contentHtml, out var errorMessage))
+            var result = await WebClientUtils.GetRemoteHtmlAsync(item.Url, rule.Charset, rule.CookieString);
+            if (!result.IsSuccess)
             {
-                throw new Exception(errorMessage);
+                throw new Exception(result.ErrorMessage);
             }
 
+            var contentHtml = result.Content;
             var regexContentExclude = GatherUtils.GetRegexString(rule.ContentExclude);
             var regexChannel = GatherUtils.GetRegexChannel(rule.ContentChannelStart, rule.ContentChannelEnd);
             var regexContent = GatherUtils.GetRegexContent(rule.ContentContentStart, rule.ContentContentEnd);
@@ -603,7 +609,7 @@ namespace SSCMS.Gather.Core
             var contentNextPageUrl = GetUrl(regexNextPage, contentHtml, item.Url);
             if (!string.IsNullOrEmpty(contentNextPageUrl))
             {
-                body = GetPageContent(body, rule.Charset, contentNextPageUrl, rule.CookieString, regexContentExclude, rule.ContentHtmlClearCollection, rule.ContentHtmlClearTagCollection, regexContent, regexContent2, regexContent3, regexNextPage);
+                body = await GetPageContentAsync(body, rule.Charset, contentNextPageUrl, rule.CookieString, regexContentExclude, rule.ContentHtmlClearCollection, rule.ContentHtmlClearTagCollection, regexContent, regexContent2, regexContent3, regexNextPage);
             }
             var channel = GetValue("channel", regexChannel, contentHtml);
 
@@ -649,13 +655,16 @@ namespace SSCMS.Gather.Core
             return rule.Get($"{attributeName}Default", string.Empty);
         }
 
-        public static string GetPageContent(string previousPageContent, Charset charset, string url, string cookieString, string regexContentExclude, string contentHtmlClearCollection, string contentHtmlClearTagCollection, string regexContent, string regexContent2, string regexContent3, string regexNextPage)
+        public static async Task<string> GetPageContentAsync(string previousPageContent, Charset charset, string url, string cookieString, string regexContentExclude, string contentHtmlClearCollection, string contentHtmlClearTagCollection, string regexContent, string regexContent2, string regexContent3, string regexNextPage)
         {
             var content = previousPageContent;
-            if (!WebClientUtils.GetRemoteHtml(url, charset, cookieString, out var contentHtml, out var errorMessage))
+            var result = await WebClientUtils.GetRemoteHtmlAsync(url, charset, cookieString);
+            if (!result.IsSuccess)
             {
-                throw new Exception(errorMessage);
+                throw new Exception(result.ErrorMessage);
             }
+
+            var contentHtml = result.Content;
             var nextPageContent = GetValue("content", regexContent, contentHtml);
             if (string.IsNullOrEmpty(nextPageContent) && !string.IsNullOrEmpty(regexContent2))
             {
@@ -711,7 +720,7 @@ namespace SSCMS.Gather.Core
                     contentNextPageUrl = string.Empty;
                 }
             }
-            return !string.IsNullOrEmpty(contentNextPageUrl) ? GetPageContent(content, charset, contentNextPageUrl, cookieString, regexContentExclude, contentHtmlClearCollection, contentHtmlClearTagCollection, regexContent, regexContent2, regexContent3, regexNextPage) : content;
+            return !string.IsNullOrEmpty(contentNextPageUrl) ? await GetPageContentAsync(content, charset, contentNextPageUrl, cookieString, regexContentExclude, contentHtmlClearCollection, contentHtmlClearTagCollection, regexContent, regexContent2, regexContent3, regexNextPage) : content;
         }
 
         public static string ReplaceFirst(string input, string replace, string to)

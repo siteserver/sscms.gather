@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
 
@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="SSCMS" Version="7.0.12" />
+    <PackageReference Include="SSCMS" Version="7.1.0" />
     <!--<ProjectReference Include="..\..\..\SSCMS\SSCMS.csproj" />-->
   </ItemGroup>
 

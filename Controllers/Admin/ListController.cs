@@ -18,6 +18,7 @@ namespace SSCMS.Gather.Controllers.Admin
         private const string Route = "gather/list";
         private const string RouteExport = "gather/list/actions/export";
         private const string RouteImport = "gather/list/actions/import";
+        private const string RouteDelete = "gather/list/actions/delete";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
