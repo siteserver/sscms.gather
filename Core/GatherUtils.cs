@@ -454,6 +454,7 @@ namespace SSCMS.Gather.Core
             {
                 host += ":" + myUri.Port;
             }
+            var currentPageUrl = StringUtils.TrimEndSlash(gatherUrl).Substring(0, gatherUrl.LastIndexOf('/'));
 
             var contentUrlList = new List<string>();
             foreach (var contentUrl in contentUrls)
@@ -468,6 +469,10 @@ namespace SSCMS.Gather.Core
                 else if (contentUrl.StartsWith('/'))
                 {
                     url = PageUtils.Combine(host, contentUrl);
+                }
+                else
+                {
+                    url = PageUtils.Combine(currentPageUrl, contentUrl);
                 }
 
                 if (string.IsNullOrEmpty(url)) continue;

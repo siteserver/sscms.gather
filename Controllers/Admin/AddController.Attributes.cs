@@ -38,10 +38,6 @@ namespace SSCMS.Gather.Controllers.Admin
                     || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(SSCMS.Models.Content.AdminId))
                     || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(SSCMS.Models.Content.UserId))
                     || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(SSCMS.Models.Content.SourceId))
-                    || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(SSCMS.Models.Content.HitsByDay))
-                    || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(SSCMS.Models.Content.HitsByWeek))
-                    || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(SSCMS.Models.Content.HitsByMonth))
-                    || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(SSCMS.Models.Content.LastHitsDate))
                     || StringUtils.EqualsIgnoreCase(style.AttributeName, "CheckUserName")
                     || StringUtils.EqualsIgnoreCase(style.AttributeName, "CheckDate")
                     || StringUtils.EqualsIgnoreCase(style.AttributeName, "CheckReasons")) continue;

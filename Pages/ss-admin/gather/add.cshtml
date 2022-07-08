@@ -131,13 +131,21 @@
     </el-form-item>
   </template>
 
-  <el-form-item label="列表页内容地址开始（必填）" prop="contentUrlStart" :rules="{ required: true, message: '请输入列表页内容地址开始' }">
+  <el-form-item label="列表页内容Url链接开始（必填）" prop="contentUrlStart" :rules="{ required: true, message: '请输入列表页内容Url链接开始' }">
     <el-input type="textarea" :rows="5" id="contentUrlStart" v-model="form.contentUrlStart"></el-input>
     <div class="tips">遇到变动字符请<el-link :underline="false" type="primary" v-on:click="insert('contentUrlStart', '*')">插入 * 通配符</el-link>，多个条件请<el-link :underline="false" type="primary" v-on:click="insert('contentUrlStart', '|')">插入 | 通配符</el-link></div>
   </el-form-item>
-  <el-form-item label="列表页内容地址结束（必填）" prop="contentUrlEnd" :rules="{ required: true, message: '请输入列表页内容地址结束' }">
+  <el-form-item label="列表页内容Url链接结束（必填）" prop="contentUrlEnd" :rules="{ required: true, message: '列表页内容Url链接结束' }">
     <el-input type="textarea" :rows="5" id="contentUrlEnd" v-model="form.contentUrlEnd"></el-input>
     <div class="tips">遇到变动字符请<el-link :underline="false" type="primary" v-on:click="insert('contentUrlEnd', '*')">插入 * 通配符</el-link>，多个条件请<el-link :underline="false" type="primary" v-on:click="insert('contentUrlEnd', '|')">插入 | 通配符</el-link></div>
+  </el-form-item>
+  <el-form-item label="列表页内容区域开始（选填）">
+    <el-input type="textarea" :rows="5" id="listAreaStart" v-model="form.listAreaStart"></el-input>
+    <div class="tips">遇到变动字符请<el-link :underline="false" type="primary" v-on:click="insert('listAreaStart', '*')">插入 * 通配符</el-link>，多个条件请<el-link :underline="false" type="primary" v-on:click="insert('listAreaStart', '|')">插入 | 通配符</el-link></div>
+  </el-form-item>
+  <el-form-item label="列表页内容区域结束（选填）">
+    <el-input type="textarea" :rows="5" id="listAreaEnd" v-model="form.listAreaEnd"></el-input>
+    <div class="tips">遇到变动字符请<el-link :underline="false" type="primary" v-on:click="insert('listAreaEnd', '*')">插入 * 通配符</el-link>，多个条件请<el-link :underline="false" type="primary" v-on:click="insert('listAreaEnd', '|')">插入 | 通配符</el-link></div>
   </el-form-item>
   <template v-if="form.imageSource === 'list'">
     <el-form-item label="列表页图片地址开始（必填）" prop="imageUrlStart" :rules="{ required: true, message: '请输入列表页图片地址开始' }">
@@ -244,14 +252,6 @@
   <el-form-item label="内容标题包含（选填）">
     <el-input id="titleInclude" v-model="form.titleInclude"></el-input>
     <div class="tips">限定采集内容的标题必须包含的字符串，遇到变动字符请<el-link :underline="false" type="primary" v-on:click="insert('titleInclude', '*')">插入 * 通配符</el-link>，多个条件请<el-link :underline="false" type="primary" v-on:click="insert('titleInclude', '|')">插入 | 通配符</el-link></div>
-  </el-form-item>
-  <el-form-item label="区域内网址开始（选填）">
-    <el-input type="textarea" :rows="5" id="listAreaStart" v-model="form.listAreaStart"></el-input>
-    <div class="tips">遇到变动字符请<el-link :underline="false" type="primary" v-on:click="insert('listAreaStart', '*')">插入 * 通配符</el-link>，多个条件请<el-link :underline="false" type="primary" v-on:click="insert('listAreaStart', '|')">插入 | 通配符</el-link></div>
-  </el-form-item>
-  <el-form-item label="区域内网址结束（选填）">
-    <el-input type="textarea" :rows="5" id="listAreaEnd" v-model="form.listAreaEnd"></el-input>
-    <div class="tips">遇到变动字符请<el-link :underline="false" type="primary" v-on:click="insert('listAreaEnd', '*')">插入 * 通配符</el-link>，多个条件请<el-link :underline="false" type="primary" v-on:click="insert('listAreaEnd', '|')">插入 | 通配符</el-link></div>
   </el-form-item>
   <el-form-item label="登陆网站Cookie（选填）">
     <el-input v-model="form.cookieString"></el-input>

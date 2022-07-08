@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
+using Datory;
 using SSCMS.Gather.Models;
 using SSCMS.Utils;
 
@@ -11,18 +13,20 @@ namespace SSCMS.Gather.Core
     {
         public static async Task<Result> GetRemoteHtmlAsync(string url, Charset charset, string cookieString)
         {
-            var result = new Result{
-              IsSuccess = false,
-              Content = string.Empty,
-              ErrorMessage = string.Empty,
+            var result = new Result
+            {
+                IsSuccess = false,
+                Content = string.Empty,
+                ErrorMessage = string.Empty,
             };
 
             for (var i = 0; i < 2; i++)
             {
                 try
                 {
-                    result.Content = await GetStringAsync(url);
+                    result.Content = await GetStringAsync(url, charset);
                     result.IsSuccess = true;
+                    break;
                 }
                 catch (Exception ex)
                 {
@@ -33,29 +37,43 @@ namespace SSCMS.Gather.Core
             return result;
         }
 
-        // 获取指定网页的HTML代码
-        public static async Task<string> GetStringAsync(string url)
+        public static async Task<string> GetStringAsync(string url, Charset charset)
         {
             try
             {
                 string html;
 
-                using (var client = new HttpClient())
+                if (charset == Charset.Utf8)
                 {
-                    html = await client.GetStringAsync(url);
+                    using (var client = new HttpClient())
+                    {
+                        html = await client.GetStringAsync(url);
+                    }
                 }
-
-                // using (var client = new WebClient())
-                // {
-                //     html = client.DownloadString(url);
-                // }
+                else
+                {
+                    using (var client = new HttpClient())
+                    {
+                        var bytes = await client.GetByteArrayAsync(url);
+                        html = ConvertBytesToString(bytes, charset);
+                    }
+                }
 
                 return html;
             }
-            catch
+            catch (Exception ex)
             {
-                throw new Exception($"页面地址“{url}”无法访问！");
+                throw new Exception($"页面地址“{url}”无法访问，{ex.Message}！");
             }
+        }
+
+        private static string ConvertBytesToString(byte[] bytes, Charset charset)
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            var fromEncoding = System.Text.Encoding.GetEncoding(charset.GetValue().ToUpper());
+            var toEncoding = Encoding.GetEncoding("UTF-8");
+            var toBytes = Encoding.Convert(fromEncoding, toEncoding, bytes);
+            return toEncoding.GetString(toBytes);
         }
 
         public static async Task<bool> DownloadAsync(string remoteUrl, string filePath)
@@ -63,7 +81,7 @@ namespace SSCMS.Gather.Core
             try
             {
                 FileUtils.DeleteFileIfExists(filePath);
-                
+
                 using (var client = new HttpClient())
                 {
                     using (var stream = await client.GetStreamAsync(remoteUrl))
@@ -74,9 +92,6 @@ namespace SSCMS.Gather.Core
                         }
                     }
                 }
-
-                // using var client = new WebClient();
-                // client.DownloadFile(remoteUrl, filePath);
             }
             catch
             {
