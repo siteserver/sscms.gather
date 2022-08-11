@@ -115,14 +115,6 @@ namespace SSCMS.Gather.Core
             return urlWithoutFileName;
         }
 
-        private static string RemoveProtocolFromUrl(string url)
-        {
-            if (string.IsNullOrEmpty(url)) return string.Empty;
-
-            url = url.Trim();
-            return PageUtils.IsProtocolUrl(url) ? url.Substring(url.IndexOf("://", StringComparison.Ordinal) + 3) : url;
-        }
-
         public static string GetUrlByBaseUrl(string rawUrl, string baseUrl)
         {
             var url = string.Empty;
@@ -151,7 +143,7 @@ namespace SSCMS.Gather.Core
                     var count = StringUtils.GetStartCount("../", rawUrl);
                     rawUrl = rawUrl.Remove(0, 3 * count);
                     baseUrl = GetUrlWithoutFileName(baseUrl).TrimEnd('/');
-                    baseUrl = RemoveProtocolFromUrl(baseUrl);
+                    // baseUrl = RemoveProtocolFromUrl(baseUrl);
                     for (var i = 0; i < count; i++)
                     {
                         var j = baseUrl.LastIndexOf('/');
@@ -164,7 +156,7 @@ namespace SSCMS.Gather.Core
                             break;
                         }
                     }
-                    url = PageUtils.Combine(PageUtils.AddProtocolToUrl(baseUrl), rawUrl);
+                    url = PageUtils.Combine(baseUrl, rawUrl);
                 }
                 else
                 {
