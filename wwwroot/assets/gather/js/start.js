@@ -116,7 +116,7 @@ var methods = {
       utils.loading($this, false);
     });
   },
-  
+
   apiGetStatus: function() {
     var $this = this;
 
@@ -132,9 +132,11 @@ var methods = {
       } else {
         $this.percentage = 0;
       }
-      
+
       if ($this.cache.status === 'progress') {
-        $this.apiGetStatus();
+        setTimeout(function () {
+          $this.apiGetStatus();
+        }, 1000);
       }
     }).catch(function (error) {
       utils.error(error);
