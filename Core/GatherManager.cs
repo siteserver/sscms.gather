@@ -49,13 +49,20 @@ namespace SSCMS.Gather.Core
                 Message = message,
                 FailureMessages = new List<string>()
             };
-            _cacheManager.AddOrUpdateSliding(guid, cache, 60);
+            _cacheManager.AddOrUpdateSliding(guid, TranslateUtils.JsonSerialize(cache), 60);
             return cache;
+        }
+
+        private void SetCache(string guid, ProgressCache cache)
+        {
+            _cacheManager.AddOrUpdateSliding(guid, TranslateUtils.JsonSerialize(cache), 60);
         }
 
         public ProgressCache GetCache(string guid)
         {
-            return _cacheManager.Get<ProgressCache>(guid);
+            var objStr =  _cacheManager.Get<string>(guid);
+            var cache = TranslateUtils.JsonDeserialize<ProgressCache>(objStr);
+            return cache;
         }
 
         public void Start(int adminId, int siteId, int ruleId, string guid)
@@ -110,6 +117,7 @@ namespace SSCMS.Gather.Core
             cache.TotalCount = rule.GatherNum > 0 ? rule.GatherNum : items.Count;
             cache.IsSuccess = true;
             cache.Message = "开始采集内容...";
+            SetCache(guid, cache);
             //if (isCli) await CliUtils.PrintLine(cache.Message);
 
             var channelIdAndContentIdList = new List<KeyValuePair<int, int>>();
@@ -125,6 +133,7 @@ namespace SSCMS.Gather.Core
                     cache.SuccessCount++;
                     cache.IsSuccess = true;
                     cache.Message = $"采集成功：{result.Title}";
+                    SetCache(guid, cache);
                     //if (isCli) await CliUtils.PrintLine(cache.Message);
                 }
                 else
@@ -134,6 +143,7 @@ namespace SSCMS.Gather.Core
                     cache.Message = result.ErrorMessage;
                     //if (isCli) await CliUtils.PrintErrorAsync($"采集失败：{errorMessage}");
                     cache.FailureMessages.Add(result.ErrorMessage);
+                    SetCache(guid, cache);
                 }
                 if (cache.SuccessCount == cache.TotalCount) break;
             }
@@ -154,6 +164,7 @@ namespace SSCMS.Gather.Core
             cache.Status = StatusSuccess;
             cache.IsSuccess = true;
             cache.Message = $"任务完成，共采集内容 {cache.SuccessCount} 篇。";
+            SetCache(guid, cache);
             //if (isCli) await CliUtils.PrintLine(cache.Message);
         }
 
@@ -186,6 +197,7 @@ namespace SSCMS.Gather.Core
             cache.TotalCount = rule.GatherNum > 0 ? rule.GatherNum : items.Count;
             cache.IsSuccess = true;
             cache.Message = "开始采集内容...";
+            SetCache(guid, cache);
 
             var channelIdAndContentIdList = new List<KeyValuePair<int, int>>();
 
@@ -200,6 +212,7 @@ namespace SSCMS.Gather.Core
                     cache.SuccessCount++;
                     cache.IsSuccess = true;
                     cache.Message = $"采集成功：{result.Title}";
+                    SetCache(guid, cache);
                 }
                 else
                 {
@@ -207,6 +220,7 @@ namespace SSCMS.Gather.Core
                     cache.IsSuccess = false;
                     cache.Message = result.ErrorMessage;
                     cache.FailureMessages.Add(result.ErrorMessage);
+                    SetCache(guid, cache);
                 }
                 if (cache.SuccessCount == cache.TotalCount) break;
             }
@@ -227,6 +241,7 @@ namespace SSCMS.Gather.Core
             cache.Status = StatusSuccess;
             cache.IsSuccess = true;
             cache.Message = $"任务完成，共采集内容 {cache.SuccessCount} 篇。";
+            SetCache(guid, cache);
         }
 
         private async Task<(bool Success, string Title, string ErrorMessage)> GatherOneAsync(Site siteInfo, Channel channelInfo, string regexTitleInclude, string regexContentExclude, string regexTitle, string regexContent, string regexContent2, string regexContent3, string regexNextPage, string regexChannel, IEnumerable<string> contentAttributes, Rule rule, Item item, ICollection<KeyValuePair<int, int>> channelIdAndContentIdList, int adminId)
@@ -544,6 +559,30 @@ namespace SSCMS.Gather.Core
                 else if (rule.ImageSource == ImageSource.List)
                 {
                     contentInfo.ImageUrl = item.Content.ImageUrl;
+
+                    if (!string.IsNullOrEmpty(contentInfo.ImageUrl) && rule.IsSaveImage)
+                    {
+                        var originalLinkHref = contentInfo.ImageUrl;
+                        var linkHref = GatherUtils.GetUrlByBaseUrl(originalLinkHref, item.GatherUrl);
+
+                        var fileExtension = PathUtils.GetExtension(originalLinkHref);
+                        var fileName = $"{StringUtils.GetShortGuid(false)}{fileExtension}";
+
+                        var directoryPath = await _pathManager.GetUploadDirectoryPathAsync(siteInfo, UploadType.File);
+                        var filePath = PathUtils.Combine(directoryPath, fileName);
+                        DirectoryUtils.CreateDirectoryIfNotExists(filePath);
+                        try
+                        {
+                            await WebClientUtils.DownloadAsync(linkHref, filePath);
+                            var fileUrl = await _pathManager.GetVirtualUrlByPhysicalPathAsync(siteInfo, filePath);
+
+                            contentInfo.ImageUrl= fileUrl;
+                        }
+                        catch
+                        {
+                            // ignored
+                        }
+                    }
                 }
 
                 if (rule.IsSaveFiles)

@@ -532,6 +532,7 @@ namespace SSCMS.Gather.Core
                 items.Add(new Item
                 {
                     Url = contentUrlList[i],
+                    GatherUrl = gatherUrl,
                     Content = content
                 });
             }
