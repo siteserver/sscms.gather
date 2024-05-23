@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using SSCMS.Enums;
 using SSCMS.Gather.Abstractions;
@@ -13,30 +14,34 @@ namespace SSCMS.Gather.Core
 {
     public class GatherManager : IGatherManager
     {
+        public const string TaskType = "Gather";
+        public const string PermissionsAdd = "gather_add";
+        public const string PermissionsList = "gather_list";
+        public const string PermissionsTasks = "gather_tasks";
+
         private const string StatusProgress = "progress";
         private const string StatusSuccess = "success";
 
         private readonly IPathManager _pathManager;
         private readonly ICacheManager _cacheManager;
         private readonly ITaskManager _taskManager;
+        private readonly ICreateManager _createManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
         private readonly IRuleRepository _ruleRepository;
 
-        public GatherManager(IPathManager pathManager, ICacheManager cacheManager, ITaskManager taskManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IRuleRepository ruleRepository)
+        public GatherManager(IPathManager pathManager, ICacheManager cacheManager, ITaskManager taskManager, ICreateManager createManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IRuleRepository ruleRepository)
         {
             _pathManager = pathManager;
             _cacheManager = cacheManager;
             _taskManager = taskManager;
+            _createManager = createManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;
             _ruleRepository = ruleRepository;
         }
-
-        public const string PermissionsAdd = "gather_add";
-        public const string PermissionsList = "gather_list";
 
         private ProgressCache InitCache(string guid, string message)
         {
@@ -60,7 +65,7 @@ namespace SSCMS.Gather.Core
 
         public ProgressCache GetCache(string guid)
         {
-            var objStr =  _cacheManager.Get<string>(guid);
+            var objStr = _cacheManager.Get<string>(guid);
             var cache = TranslateUtils.JsonDeserialize<ProgressCache>(objStr);
             return cache;
         }
@@ -80,7 +85,7 @@ namespace SSCMS.Gather.Core
             return guid;
         }
 
-        private async Task GatherChannelsAsync(int adminId, int siteId, int ruleId, string guid)
+        public async Task GatherChannelsAsync(int adminId, int siteId, int ruleId, string guid)
         {
             var cache = InitCache(guid, "开始获取链接...");
             //if (isCli) await CliUtils.PrintLine(cache.Message);
@@ -148,16 +153,21 @@ namespace SSCMS.Gather.Core
                 if (cache.SuccessCount == cache.TotalCount) break;
             }
 
-            //if (rule.IsChecked)
-            //{
-            //    foreach (var channelIdAndContentId in channelIdAndContentIdList)
-            //    {
-            //        var channelId = channelIdAndContentId.Key;
-            //        var contentId = channelIdAndContentId.Value;
+            if (rule.IsChecked)
+            {
+                foreach (var channelIdAndContentId in channelIdAndContentIdList)
+                {
+                    var channelId = channelIdAndContentId.Key;
+                    var contentId = channelIdAndContentId.Value;
 
-            //        CreateManager.CreateContent(siteId, channelId, contentId);
-            //    }
-            //}
+                    await _createManager.ExecuteAsync(siteId, CreateType.Content, channelId, contentId);
+                }
+                var channelIds = channelIdAndContentIdList.Select(x => x.Key).Distinct().ToList();
+                foreach (var channelId in channelIds)
+                {
+                    await _createManager.ExecuteAsync(siteId, CreateType.Channel, channelId);
+                }
+            }
 
             await _ruleRepository.UpdateLastGatherDateAsync(ruleId);
 
@@ -576,7 +586,7 @@ namespace SSCMS.Gather.Core
                             await WebClientUtils.DownloadAsync(linkHref, filePath);
                             var fileUrl = await _pathManager.GetVirtualUrlByPhysicalPathAsync(siteInfo, filePath);
 
-                            contentInfo.ImageUrl= fileUrl;
+                            contentInfo.ImageUrl = fileUrl;
                         }
                         catch
                         {
@@ -652,6 +662,7 @@ namespace SSCMS.Gather.Core
             if (rule != null)
             {
                 rule.SiteId = siteId;
+                rule.ChannelId = siteId;
                 rule.CreatedDate = DateTime.Now;
                 rule.LastModifiedDate = DateTime.Now;
                 rule.LastGatherDate = null;

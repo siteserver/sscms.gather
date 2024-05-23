@@ -14,7 +14,10 @@ namespace SSCMS.Gather.Controllers.Admin
                 return Unauthorized();
             }
 
-            await _ruleRepository.DeleteAsync(request.RuleId);
+            foreach (var ruleId in request.RuleIds)
+            {
+              await _ruleRepository.DeleteAsync(ruleId);
+            }
 
             var rules = await _ruleRepository.GetRulesAsync(request.SiteId);
             foreach (var rule in rules)

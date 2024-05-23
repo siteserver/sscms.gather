@@ -6,7 +6,8 @@ var $urlDelete = $url + '/actions/delete';
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   rules: null,
-  urlUpload: null
+  urlUpload: null,
+  multipleSelection: [],
 });
 
 var methods = {
@@ -29,13 +30,13 @@ var methods = {
     });
   },
 
-  apiDelete: function (rule) {
+  apiDelete: function (ruleIds) {
     var $this = this;
 
     utils.loading(this, true);
     $api.post($urlDelete, {
       siteId: $this.siteId,
-      ruleId: rule.id
+      ruleIds: ruleIds
     }).then(function (response) {
       var res = response.data;
 
@@ -48,10 +49,23 @@ var methods = {
     });
   },
 
+  btnAddClick: function () {
+    location.href = utils.getPageUrl('gather', 'add', {
+      siteId: this.siteId
+    });
+  },
+
   btnTestClick: function (rule) {
     utils.addTab('测试采集规则：' + rule.ruleName, utils.getPageUrl('gather', 'testing', {
       siteId: this.siteId,
       ruleId: rule.id
+    }));
+  },
+
+  btnStartSelectedClick: function () {
+    utils.addTab('批量采集', utils.getPageUrl('gather', 'status', {
+      siteId: this.siteId,
+      ruleIds: this.dataIds.join(',')
     }));
   },
 
@@ -92,6 +106,18 @@ var methods = {
     window.open($apiUrl + $urlExport + '?siteId=' + this.siteId + '&ruleId=' + rule.id + '&access_token=' + $token);
   },
 
+  btnDeleteSelectedClick: function () {
+    var $this = this;
+
+    utils.alertDelete({
+      title: '删除所选数据',
+      text: '此操作将删除所选数据，确定吗？',
+      callback: function () {
+        $this.apiDelete($this.dataIds);
+      }
+    });
+  },
+
   btnDeleteClick: function (rule) {
     var $this = this;
 
@@ -99,9 +125,24 @@ var methods = {
       title: '删除采集规则',
       text: '此操作将删除采集规则' + rule.ruleName + '，确定吗？',
       callback: function () {
-        $this.apiDelete(rule);
+        $this.apiDelete([rule.id]);
       }
     });
+  },
+
+  toggleSelection: function(row) {
+    this.$refs.multipleTable.toggleRowSelection(row);
+  },
+
+  handleSelectionChange: function(val) {
+    this.multipleSelection = val;
+  },
+
+  tableRowClassName: function(scope) {
+    if (this.multipleSelection.indexOf(scope.row) !== -1) {
+      return 'current-row';
+    }
+    return '';
   },
 
   uploadBefore(file) {
@@ -137,6 +178,20 @@ var $vue = new Vue({
   el: '#main',
   data: data,
   methods: methods,
+  computed: {
+    isChecked: function() {
+      return this.multipleSelection.length > 0;
+    },
+
+    dataIds: function() {
+      var retVal = [];
+      for (var i = 0; i < this.multipleSelection.length; i++) {
+        var item = this.multipleSelection[i];
+        retVal.push(item.id);
+      }
+      return retVal;
+    },
+  },
   created: function () {
     this.apiGet();
     this.urlUpload = $apiUrl + $urlImport + '?siteId=' + this.siteId;

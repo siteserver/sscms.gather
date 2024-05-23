@@ -11,7 +11,15 @@ var data = utils.init({
     channelId: null,
     gatherNum: null,
     isChecked: null,
-    urls: null
+    gatherUrlIsCollection: true,
+    gatherUrlIsSerialize: false,
+    gatherUrlCollection: '',
+    gatherUrlSerialize: '',
+    serializeFrom: 1,
+    serializeTo: 100,
+    serializeInterval: 1,
+    serializeIsOrderByDesc: true,
+    serializeIsAddZero: false
   },
   guid: null,
   cache: {},
@@ -63,7 +71,15 @@ var methods = {
       siteId: this.siteId,
       ruleId: this.ruleId,
       channelId: this.form.channelId,
-      urls: this.form.urls,
+      gatherUrlIsCollection: this.form.gatherUrlIsCollection,
+      gatherUrlIsSerialize: this.form.gatherUrlIsSerialize,
+      gatherUrlCollection: this.form.gatherUrlCollection,
+      gatherUrlSerialize: this.form.gatherUrlSerialize,
+      serializeFrom: this.form.serializeFrom,
+      serializeTo: this.form.serializeTo,
+      serializeInterval: this.form.serializeInterval,
+      serializeIsOrderByDesc: this.form.serializeIsOrderByDesc,
+      serializeIsAddZero: this.form.serializeIsAddZero
     }).then(function (response) {
       var res = response.data;
       $this.guid = res.value;
@@ -76,7 +92,7 @@ var methods = {
       utils.loading($this, false);
     });
   },
-  
+
   apiGetStatus: function() {
     var $this = this;
 
@@ -92,7 +108,7 @@ var methods = {
       }else {
         $this.percentage = 0;
       }
-      
+
       if ($this.cache.status === 'progress') {
         $this.apiGetStatus();
       }

@@ -3,14 +3,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Gather.Core;
-using SSCMS.Utils;
 
 namespace SSCMS.Gather.Controllers.Admin
 {
     public partial class StartController
     {
         [HttpPost, Route(Route)]
-        public async Task<ActionResult<StringResult>> Submit([FromBody] SubmitRequest request)
+        public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId, GatherManager.PermissionsList))
             {
@@ -35,9 +34,9 @@ namespace SSCMS.Gather.Controllers.Admin
 
             await _ruleRepository.UpdateAsync(rule);
 
-            return new StringResult
+            return new BoolResult
             {
-                Value = StringUtils.Guid()
+                Value = true
             };
         }
     }

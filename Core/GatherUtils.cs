@@ -327,31 +327,55 @@ namespace SSCMS.Gather.Core
 
         public static List<string> GetGatherUrlList(Rule rule)
         {
+            return GetGatherUrlList(
+                rule.GatherUrlIsCollection,
+                rule.GatherUrlIsSerialize,
+                rule.GatherUrlCollection,
+                rule.GatherUrlSerialize,
+                rule.SerializeFrom,
+                rule.SerializeTo,
+                rule.SerializeInterval,
+                rule.SerializeIsOrderByDesc,
+                rule.SerializeIsAddZero
+            );
+        }
+
+        public static List<string> GetGatherUrlList(
+            bool gatherUrlIsCollection,
+            bool gatherUrlIsSerialize,
+            string gatherUrlCollection,
+            string gatherUrlSerialize,
+            int serializeFrom,
+            int serializeTo,
+            int serializeInterval,
+            bool serializeIsOrderByDesc,
+            bool serializeIsAddZero)
+        {
             var gatherUrls = new List<string>();
-            if (rule.GatherUrlIsCollection)
+            if (gatherUrlIsCollection)
             {
-                gatherUrls.AddRange(StringCollectionToList(rule.GatherUrlCollection, separator: '\n'));
+                gatherUrls.AddRange(StringCollectionToList(gatherUrlCollection, separator: '\n'));
             }
 
-            if (rule.GatherUrlIsSerialize)
+            if (gatherUrlIsSerialize)
             {
-                if (rule.SerializeFrom <= rule.SerializeTo)
+                if (serializeFrom <= serializeTo)
                 {
                     var count = 1;
-                    for (var i = rule.SerializeFrom; i <= rule.SerializeTo; i = i + rule.SerializeInterval)
+                    for (var i = serializeFrom; i <= serializeTo; i = i + serializeInterval)
                     {
                         count++;
                         if (count > 200) break;
                         var thePageNumber = i.ToString();
-                        if (rule.SerializeIsAddZero && thePageNumber.Length == 1)
+                        if (serializeIsAddZero && thePageNumber.Length == 1)
                         {
                             thePageNumber = "0" + i;
                         }
-                        gatherUrls.Add(rule.GatherUrlSerialize.Replace("*", thePageNumber));
+                        gatherUrls.Add(gatherUrlSerialize.Replace("*", thePageNumber));
                     }
                 }
 
-                if (rule.SerializeIsOrderByDesc)
+                if (serializeIsOrderByDesc)
                 {
                     gatherUrls.Reverse();
                 }
@@ -568,7 +592,7 @@ namespace SSCMS.Gather.Core
             var regexTitle = GatherUtils.GetRegexTitle(rule.ContentTitleStart, rule.ContentTitleEnd);
             var contentAttributes = ListUtils.GetStringList(rule.ContentAttributes);
 
-            var title = rule.ContentTitleByList ? item.Content.Title : GetValue("title", regexTitle,  contentHtml);
+            var title = rule.ContentTitleByList ? item.Content.Title : GetValue("title", regexTitle, contentHtml);
             var body = GetValue("content", regexContent, contentHtml);
             if (string.IsNullOrEmpty(body) && !string.IsNullOrEmpty(regexContent2))
             {

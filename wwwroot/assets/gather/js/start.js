@@ -5,7 +5,6 @@ var $urlActionsStatus = '/gather/start/actions/status';
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   ruleId: utils.getQueryInt('ruleId'),
-  pageProcess: false,
   rule: null,
   form: {
     channelIds: null,
@@ -22,9 +21,6 @@ var data = utils.init({
     serializeIsOrderByDesc: null,
     serializeIsAddZero: null
   },
-  guid: null,
-  cache: {},
-  percentage: null,
 });
 
 var methods = {
@@ -87,57 +83,11 @@ var methods = {
       serializeIsAddZero: this.form.serializeIsAddZero
     }).then(function (response) {
       var res = response.data;
-      $this.guid = res.value;
 
-      $this.apiGather();
-    }).catch(function (error) {
-      utils.error(error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
-  },
-
-  apiGather: function () {
-    this.pageProcess = true;
-    var $this = this;
-
-    utils.loading(this, true);
-    $api.post($urlActionsGather, {
-      siteId: this.siteId,
-      ruleId: this.ruleId,
-      guid: this.guid
-    }).then(function (response) {
-      var res = response.data;
-
-      $this.apiGetStatus();
-    }).catch(function (error) {
-      utils.error(error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
-  },
-
-  apiGetStatus: function() {
-    var $this = this;
-
-    $api.post($urlActionsStatus, {
-      siteId: this.siteId,
-      guid: this.guid
-    }).then(function (response) {
-      var res = response.data;
-
-      $this.cache = res.cache || {};
-      if ($this.cache.totalCount > 0) {
-        $this.percentage = (($this.cache.successCount/$this.cache.totalCount) * 100).toFixed(1);
-      } else {
-        $this.percentage = 0;
-      }
-
-      if ($this.cache.status === 'progress') {
-        setTimeout(function () {
-          $this.apiGetStatus();
-        }, 1000);
-      }
+      location.href = utils.getPageUrl('gather', 'status', {
+        siteId: $this.siteId,
+        ruleIds: $this.ruleId
+      });
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {

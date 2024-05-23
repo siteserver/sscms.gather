@@ -48,7 +48,7 @@ namespace SSCMS.Gather.Controllers.Admin
 
         public class DeleteRequest : SiteRequest
         {
-            public int RuleId { get; set; }
+            public List<int> RuleIds { get; set; }
         }
 
         public class DeleteResult

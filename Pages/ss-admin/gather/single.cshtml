@@ -86,10 +86,36 @@
       </el-radio-group>
       <div class="tips">采集的内容是否不经过审核直接添加到栏目中</div>
     </el-form-item>
-    <el-form-item label="指定采集页面地址" prop="urls" :rules="{ required: true, message: '请输入指定采集页面地址' }">
+
+    <el-form-item label="采集内容页网址规则">
+      <el-checkbox v-model="form.gatherUrlIsCollection" :label="true">从指定网址</el-checkbox>
+      <el-checkbox v-model="form.gatherUrlIsSerialize" :label="true">从序列相似网址</el-checkbox>
+    </el-form-item>
+    <el-form-item v-if="form.gatherUrlIsCollection" label="指定采集内容页网址" prop="gatherUrlCollection" :rules="{ required: true, message: '请输入指定采集内容页网址' }">
+      <el-input type="textarea" :rows="5" v-model="form.gatherUrlCollection"></el-input>
+      <div class="tips">多个网址以换行符分割</div>
+    </el-form-item>
+    <template v-if="form.gatherUrlIsSerialize">
+      <el-form-item label="序列相似网址" prop="gatherUrlSerialize" :rules="{ required: true, message: '请输入序列相似网址' }">
+        <el-input id="gatherUrlSerialize" v-model="form.gatherUrlSerialize"></el-input>
+        <div class="tips">序列相似网址必须<el-link :underline="false" type="primary" v-on:click="insert('gatherUrlSerialize', '*')">插入 * 通配符</el-link>，代表变动数字</div>
+      </el-form-item>
+      <el-form-item label="变动数字范围">
+        从
+        <el-input-number controls-position="right" size="small" :min="1" v-model.number="form.serializeFrom" style="width: 100px" v-validate="'required|numeric'"></el-input-number>
+        到
+        <el-input-number controls-position="right" size="small" :min="1" v-model.number="form.serializeTo" style="width: 100px" v-validate="'required|numeric|min_value:1'"></el-input-number>
+        数字变动倍数：
+        <el-input-number controls-position="right" size="small" :min="1" v-model.number="form.serializeInterval" style="width: 100px" v-validate="'required|numeric|min_value:1'"></el-input-number>
+        <el-checkbox v-model="form.serializeIsOrderByDesc" :label="true" style="margin-left: 20px;">倒序</el-checkbox>
+        <el-checkbox v-model="form.serializeIsAddZero" :label="true">补零</el-checkbox>
+      </el-form-item>
+    </template>
+
+    <!-- <el-form-item label="指定采集页面地址" prop="urls" :rules="{ required: true, message: '请输入指定采集页面地址' }">
       <el-input type="textarea" :rows="5" v-model="form.urls"></el-input>
       <div class="tips">多个地址以换行符分割</div>
-    </el-form-item>
+    </el-form-item> -->
     
   </el-form>
   

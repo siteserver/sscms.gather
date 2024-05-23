@@ -4,11 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Gather.Abstractions;
 using SSCMS.Dto;
-using SSCMS.Gather.Core;
 using SSCMS.Gather.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
-using SSCMS.Utils;
 
 namespace SSCMS.Gather.Controllers.Admin
 {
@@ -17,20 +15,16 @@ namespace SSCMS.Gather.Controllers.Admin
     public partial class StartController : ControllerBase
     {
         private const string Route = "gather/start";
-        private const string RouteActionsGather = "gather/start/actions/gather";
-        private const string RouteActionsStatus = "gather/start/actions/status";
 
         private readonly IAuthManager _authManager;
-        private readonly IGatherManager _gatherManager;
         private readonly IRuleRepository _ruleRepository;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public StartController(IAuthManager authManager, IGatherManager gatherManager, IRuleRepository ruleRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public StartController(IAuthManager authManager, IRuleRepository ruleRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
-            _gatherManager = gatherManager;
             _ruleRepository = ruleRepository;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
@@ -65,22 +59,6 @@ namespace SSCMS.Gather.Controllers.Admin
             public int SerializeInterval { get; set; }
             public bool SerializeIsOrderByDesc { get; set; }
             public bool SerializeIsAddZero { get; set; }
-        }
-
-        public class GatherRequest : SiteRequest
-        {
-            public int RuleId { get; set; }
-            public string Guid { get; set; }
-        }
-
-        public class StatusRequest : SiteRequest
-        {
-            public string Guid { get; set; }
-        }
-
-        public class StatusResult
-        {
-            public ProgressCache Cache { get; set; }
         }
     }
 }

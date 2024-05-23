@@ -16,5 +16,7 @@ namespace SSCMS.Gather.Abstractions
         Task ExportAsync(Rule rule, string filePath);
 
         Task ImportAsync(int siteId, string filePath, bool overwrite);
+
+        Task GatherChannelsAsync(int adminId, int siteId, int ruleId, string guid);
     }
 }

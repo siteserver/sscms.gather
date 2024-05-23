@@ -26,7 +26,19 @@ namespace SSCMS.Gather.Controllers.Admin
 
             await _ruleRepository.UpdateAsync(rule);
 
-            var urls = ListUtils.GetStringList(request.Urls, '\n');
+            var urls = GatherUtils.GetGatherUrlList(
+                request.GatherUrlIsCollection,
+                request.GatherUrlIsSerialize,
+                request.GatherUrlCollection,
+                request.GatherUrlSerialize,
+                request.SerializeFrom,
+                request.SerializeTo,
+                request.SerializeInterval,
+                request.SerializeIsOrderByDesc,
+                request.SerializeIsAddZero
+            );
+
+            // var urls = ListUtils.GetStringList(request.Urls, '\n');
             var items = urls.Select(x => new Item
             {
                 Url = x,

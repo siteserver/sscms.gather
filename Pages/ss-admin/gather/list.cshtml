@@ -1,9 +1,60 @@
 @page
 @{ Layout = "_Layout"; }
+@section Styles{
+  <style>
+    .el-table__body tr.hover-row.current-row>td, .el-table__body tr.hover-row.el-table__row--striped.current-row>td {
+      background: rgb(230, 247, 245) !important;
+    }
+  </style>
+}
+
+<el-row id="commands">
+  <el-button size="mini" plain type="primary" icon="el-icon-circle-plus-outline" v-on:click="btnAddClick">
+    添 加
+  </el-button>
+
+  <el-upload
+    style="display: inline-block;"
+    class="uploader"
+    :action="urlUpload"
+    :headers="{Authorization: 'Bearer ' + $token}"
+    :show-file-list="false"
+    :drag="false"
+    :limit="1"
+    :before-upload="uploadBefore"
+    :on-progress="uploadProgress"
+    :on-success="uploadSuccess"
+    :on-error="uploadError"
+    :multiple="false">
+    <el-button
+      size="mini"
+      plain
+      icon="el-icon-upload2"
+      type="primary">
+      导 入
+    </el-button>
+  </el-upload>
+
+  <el-button size="mini" plain type="primary" icon="el-icon-download" :disabled="!isChecked" v-on:click="btnStartSelectedClick">
+    批量采集
+  </el-button>
+
+  <el-button size="mini" plain type="primary" style="margin-left: 0;" icon="el-icon-delete" :disabled="!isChecked" v-on:click="btnDeleteSelectedClick">
+    删 除
+  </el-button>
+</el-row>
 
 <div style="height: 10px"></div>
 
-<el-table :data="rules">
+<el-table
+  ref="multipleTable"
+  :data="rules"
+  stripe
+  style="width: 100%"
+  :row-class-name="tableRowClassName"
+  v-on:selection-change="handleSelectionChange"
+  v-on:row-click="toggleSelection">
+  <el-table-column type="selection" width="45" align="center"></el-table-column>
   <el-table-column prop="ruleName" label="采集规则" width="200"></el-table-column>
   <el-table-column prop="gatherUrl" label="采集网址"></el-table-column>
   <el-table-column prop="gatherDate" label="最近采集时间" width="160"></el-table-column>
@@ -35,30 +86,6 @@
     </template>
   </el-table-column>
 </el-table>
-
-<div style="height: 10px"></div>
-<el-divider></el-divider>
-<div style="height: 10px"></div>
-
-<el-upload
-  style="width: 100px;"
-  class="uploader"
-  :action="urlUpload"
-  :headers="{Authorization: 'Bearer ' + $token}"
-  :show-file-list="false"
-  :drag="false"
-  :limit="1"
-  :before-upload="uploadBefore"
-  :on-progress="uploadProgress"
-  :on-success="uploadSuccess"
-  :on-error="uploadError"
-  :multiple="false">
-  <el-button
-    size="small"
-    type="default">
-    导入采集规则
-  </el-button>
-</el-upload>
 
 @section Scripts{
   <script src="/assets/gather/js/list.js" type="text/javascript"></script>

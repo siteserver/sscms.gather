@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
 
@@ -15,7 +15,7 @@
   <ItemGroup>
     <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
 
-    <PackageReference Include="SSCMS" Version="7.2.2" />
+    <PackageReference Include="SSCMS" Version="7.3.0" />
     <!-- <ProjectReference Include="..\..\..\SSCMS\SSCMS.csproj" /> -->
   </ItemGroup>
 

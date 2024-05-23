@@ -54,7 +54,15 @@ namespace SSCMS.Gather.Controllers.Admin
             public int RuleId { get; set; }
             public int ChannelId { get; set; }
             public bool IsChecked { get; set; }
-            public string Urls { get; set; }
+            public bool GatherUrlIsCollection { get; set; }
+            public bool GatherUrlIsSerialize { get; set; }
+            public string GatherUrlCollection { get; set; }
+            public string GatherUrlSerialize { get; set; }
+            public int SerializeFrom { get; set; }
+            public int SerializeTo { get; set; }
+            public int SerializeInterval { get; set; }
+            public bool SerializeIsOrderByDesc { get; set; }
+            public bool SerializeIsAddZero { get; set; }
         }
 
         public class GatherRequest : SiteRequest
