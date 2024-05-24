@@ -18,7 +18,7 @@ var data = utils.init({
     serializeFrom: 1,
     serializeTo: 100,
     serializeInterval: 1,
-    serializeIsOrderByDesc: true,
+    serializeIsOrderByDesc: false,
     serializeIsAddZero: false
   },
   guid: null,
@@ -71,6 +71,7 @@ var methods = {
       siteId: this.siteId,
       ruleId: this.ruleId,
       channelId: this.form.channelId,
+      isChecked: this.form.isChecked,
       gatherUrlIsCollection: this.form.gatherUrlIsCollection,
       gatherUrlIsSerialize: this.form.gatherUrlIsSerialize,
       gatherUrlCollection: this.form.gatherUrlCollection,

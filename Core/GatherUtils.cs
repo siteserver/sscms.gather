@@ -365,7 +365,7 @@ namespace SSCMS.Gather.Core
                     for (var i = serializeFrom; i <= serializeTo; i = i + serializeInterval)
                     {
                         count++;
-                        if (count > 200) break;
+                        // if (count > 200) break;
                         var thePageNumber = i.ToString();
                         if (serializeIsAddZero && thePageNumber.Length == 1)
                         {
